@@ -1,0 +1,64 @@
+@if (auth.currentUser(); as user) {
+  <div class="mx-auto max-w-2xl animate-fade-in">
+    <div class="card p-6">
+      <div class="flex items-center gap-4">
+        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-2xl font-semibold text-primary">
+          {{ user.nome.charAt(0) }}
+        </div>
+        <div>
+          <h1 class="font-display text-xl font-semibold tracking-tight text-ink">{{ user.nome }}</h1>
+          <p class="text-sm text-muted">{{ user.cargo }}</p>
+          <span class="badge mt-1.5 bg-primary-light capitalize text-primary-dark">{{ user.role }}</span>
+        </div>
+      </div>
+
+      <div class="mt-6 grid grid-cols-1 gap-4 border-t border-border pt-6 sm:grid-cols-2">
+        <div class="flex items-center gap-3">
+          <app-icon name="IdCard" [size]="16" class="text-muted" />
+          <div>
+            <p class="text-xs text-muted">Número mecanográfico</p>
+            <p class="text-sm text-ink font-mono">{{ user.numeroMecanografico }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <app-icon name="Mail" [size]="16" class="text-muted" />
+          <div>
+            <p class="text-xs text-muted">E-mail</p>
+            <p class="text-sm text-ink">{{ user.email }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <app-icon name="Building2" [size]="16" class="text-muted" />
+          <div>
+            <p class="text-xs text-muted">Departamento</p>
+            <p class="text-sm text-ink">{{ user.departamento.nome }}</p>
+          </div>
+        </div>
+        @if (user.ultimoLogin) {
+          <div class="flex items-center gap-3">
+            <app-icon name="Clock" [size]="16" class="text-muted" />
+            <div>
+              <p class="text-xs text-muted">Último acesso</p>
+              <p class="text-sm text-ink">{{ user.ultimoLogin | date: 'dd MMM yyyy, HH:mm' }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="card mt-5 p-6">
+      <h2 class="mb-4 font-display text-base font-semibold tracking-tight text-ink">Os meus pedidos de suporte</h2>
+      <div class="space-y-2.5">
+        @for (t of support.tickets(); track t.id) {
+          <div class="flex items-center justify-between rounded-control border border-border px-3.5 py-2.5 text-sm">
+            <span class="font-mono text-xs text-muted">{{ t.numero }}</span>
+            <span class="flex-1 truncate px-3 text-ink">{{ t.assunto }}</span>
+            <span class="badge bg-surface-alt capitalize text-ink-soft">{{ t.estado }}</span>
+          </div>
+        } @empty {
+          <p class="text-sm text-muted">Ainda não abriste nenhum pedido.</p>
+        }
+      </div>
+    </div>
+  </div>
+}

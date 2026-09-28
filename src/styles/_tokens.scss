@@ -1,0 +1,61 @@
+// =============================================================================
+// TOKENS GLOBAIS DE DESIGN — ENDE Portal do Colaborador
+// -----------------------------------------------------------------------------
+// Este é o ÚNICO ficheiro que precisas de editar para alterar o esquema de
+// cores, tipografia ou raios de todo o portal. Todas as classes Tailwind
+// (bg-primary, text-ink, border-border, ...) e todo o SCSS dos componentes
+// consomem estas variáveis — nunca cores "hardcoded".
+//
+// Formato das cores: "R G B" (sem vírgulas), para permitir opacidade via
+// Tailwind, ex: bg-primary/10, text-ink/60.
+// =============================================================================
+
+:root {
+  // ---- Marca ENDE (baseada no logótipo: vermelho + raio + preto) ----------
+  --color-primary: 210 33 27;         // #D2211B — vermelho ENDE
+  --color-primary-dark: 158 22 18;    // #9E1612 — hover / estados activos
+  --color-primary-light: 252 223 221; // #FCDFDD — fundos subtis / badges
+
+  --color-ink: 20 21 23;              // #141517 — quase-preto do logótipo
+  --color-ink-soft: 113 116 122;      // #71747A — texto secundário sobre ink
+
+  --color-accent: 240 165 54;         // #F0A536 — âmbar "energia", usado com moderação
+
+  // ---- Cores semânticas (independentes da marca) ---------------------------
+  --color-success: 27 138 87;         // #1B8A57
+  --color-warning: 199 120 8;         // #C77808
+  --color-danger: 205 43 43;          // #CD2B2B
+
+  // ---- Superfícies e neutros -------------------------------------------------
+  --color-surface: 255 255 255;       // #FFFFFF — cartões
+  --color-surface-alt: 246 246 248;   // #F6F6F8 — fundo da aplicação
+  --color-surface-raised: 255 255 255;// #FFFFFF — elementos elevados (dropdowns, modais)
+  --color-border: 220 221 227;        // #DCDDE3
+  --color-muted: 111 114 122;         // #6F727A — texto secundário
+
+  // ---- Tipografia ------------------------------------------------------------
+  --font-display: 'Space Grotesk', 'Segoe UI', sans-serif; // títulos, marca
+  --font-body: 'Inter', 'Segoe UI', sans-serif;            // texto corrido
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;  // datas, nº de ticket, dados
+
+  // ---- Forma -------------------------------------------------------------------
+  --radius-card: 1rem;
+  --radius-control: 0.6rem;
+
+  // ---- Layout --------------------------------------------------------------
+  --sidebar-width: 17rem;
+  --sidebar-width-collapsed: 5rem;
+  --topbar-height: 4.25rem;
+}
+
+// Exemplo de tema alternativo (não usado por defeito). Para activar,
+// basta aplicar a classe "theme-dark" no <html> ou <body> — útil quando
+// o backend/gestão quiser oferecer modo escuro no futuro.
+.theme-dark {
+  --color-ink: 245 245 247;
+  --color-surface: 26 27 30;
+  --color-surface-alt: 18 19 21;
+  --color-surface-raised: 34 35 39;
+  --color-border: 51 53 58;
+  --color-muted: 156 158 165;
+}

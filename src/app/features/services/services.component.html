@@ -1,0 +1,116 @@
+<div class="mx-auto max-w-6xl">
+  <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <div>
+      <h1 class="font-display text-2xl font-semibold tracking-tight text-ink">Serviços</h1>
+      <p class="mt-1 text-sm text-muted">Acesso rápido aos serviços internos da empresa.</p>
+    </div>
+    @if (auth.isGestor()) {
+      <button type="button" (click)="abrirNovo()" class="btn-primary shrink-0">
+        <app-icon name="Plus" [size]="16" /> Novo serviço
+      </button>
+    }
+  </div>
+
+  <div class="mb-6 flex flex-wrap gap-1.5">
+    <button
+      type="button"
+      (click)="filtro.set('todas')"
+      class="badge transition-colors"
+      [class.bg-primary]="filtro() === 'todas'"
+      [class.text-white]="filtro() === 'todas'"
+      [class.bg-surface-alt]="filtro() !== 'todas'"
+      [class.text-ink-soft]="filtro() !== 'todas'"
+    >
+      Todos
+    </button>
+    @for (c of categorias; track c) {
+      <button
+        type="button"
+        (click)="filtro.set(c)"
+        class="badge capitalize transition-colors"
+        [class.bg-primary]="filtro() === c"
+        [class.text-white]="filtro() === c"
+        [class.bg-surface-alt]="filtro() !== c"
+        [class.text-ink-soft]="filtro() !== c"
+      >
+        {{ c }}
+      </button>
+    }
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" [@listStagger]="filtrados.length">
+    @for (s of filtrados; track s.id) {
+      <div class="card card-hover group relative flex items-start gap-4 p-5">
+        @if (auth.isGestor()) {
+          <div class="absolute right-2.5 top-2.5 z-10 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+            <button type="button" (click)="abrirEdicao(s, $event)" class="rounded-control bg-surface-alt p-1.5 text-ink-soft hover:text-primary">
+              <app-icon name="Settings" [size]="13" />
+            </button>
+            <button type="button" (click)="remover(s, $event)" class="rounded-control bg-surface-alt p-1.5 text-ink-soft hover:text-danger">
+              <app-icon name="X" [size]="13" />
+            </button>
+          </div>
+        }
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-control bg-primary/10 text-primary">
+          <app-icon [name]="$any(s.icone)" [size]="20" />
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-1.5">
+            <p class="text-[15px] font-medium text-ink">{{ s.nome }}</p>
+            @if (s.popular) {
+              <app-icon name="TrendingUp" [size]="13" class="text-primary" />
+            }
+          </div>
+          <p class="mt-1 text-[13px] leading-relaxed text-muted">{{ s.descricao }}</p>
+        </div>
+      </div>
+    } @empty {
+      <p class="col-span-full py-16 text-center text-sm text-muted">Nenhum serviço nesta categoria.</p>
+    }
+  </div>
+</div>
+
+@if (modalAberto()) {
+  <app-modal [title]="emEdicao() ? 'Editar serviço' : 'Novo serviço'" (close)="modalAberto.set(false)">
+    <form class="space-y-4" (ngSubmit)="guardar()">
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Nome</label>
+        <input class="input-field" [(ngModel)]="form.nome" name="nome" required />
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Descrição</label>
+        <textarea class="input-field" rows="2" [(ngModel)]="form.descricao" name="descricao" required></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Categoria</label>
+          <select class="input-field" [(ngModel)]="form.categoria" name="categoria">
+            @for (c of categorias; track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Ícone</label>
+          <select class="input-field" [(ngModel)]="form.icone" name="icone">
+            @for (i of icones; track i) {
+              <option [value]="i">{{ i }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Rota / link</label>
+        <input class="input-field" [(ngModel)]="form.link" name="link" />
+      </div>
+      <label class="flex items-center gap-2 text-sm text-ink">
+        <input type="checkbox" [(ngModel)]="form.popular" name="popular" class="h-4 w-4 rounded border-border text-primary focus:ring-primary/30" />
+        Marcar como popular
+      </label>
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" (click)="modalAberto.set(false)" class="btn-secondary">Cancelar</button>
+        <button type="submit" class="btn-primary">Guardar</button>
+      </div>
+    </form>
+  </app-modal>
+}

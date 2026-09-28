@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './styles/tokens';
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-surface-alt text-ink font-body antialiased;
+    font-feature-settings: 'ss01' on, 'cv01' on;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-tight;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-ink;
+  }
+
+  // Scrollbar discreta, coerente com o resto do portal
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-ink/15;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-ink/25;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--color-primary));
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  // Cartão base reutilizado por praticamente todas as secções
+  .card {
+    @apply bg-surface border border-border/80 rounded-card shadow-card transition-shadow duration-300;
+  }
+  .card-hover {
+    @apply hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300;
+  }
+
+  // Variante "fixado/destacado" — barra de cor à esquerda (comunicados, avisos)
+  .card-accent-left {
+    @apply border-l-[3px] border-l-primary;
+  }
+
+  // Painel de marca escuro (login, hero do dashboard) — profundidade via dois brilhos radiais
+  .brand-panel {
+    @apply relative overflow-hidden bg-ink shadow-inset-line;
+    background-image:
+      radial-gradient(ellipse 60% 50% at 0% 0%, rgb(var(--color-primary-dark) / 0.35), transparent 60%),
+      radial-gradient(ellipse 55% 45% at 100% 100%, rgb(var(--color-accent) / 0.16), transparent 60%);
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-control bg-primary px-4 py-2.5
+           text-sm font-medium text-white shadow-[0_2px_8px_-2px_rgb(var(--color-primary)/0.45)] transition-all duration-200
+           hover:bg-primary-dark hover:shadow-[0_4px_14px_-2px_rgb(var(--color-primary)/0.55)]
+           active:scale-[0.98] disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-control border border-border bg-surface px-4 py-2.5
+           text-sm font-medium text-ink transition-all duration-200
+           hover:bg-surface-alt active:scale-[0.98];
+  }
+
+  .input-field {
+    @apply w-full rounded-control border border-border bg-surface px-3.5 py-2.5 text-sm text-ink
+           shadow-[inset_0_1px_2px_rgb(0_0_0/0.03)]
+           placeholder:text-muted transition-colors duration-200
+           focus:border-primary focus:ring-2 focus:ring-primary/15 outline-none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

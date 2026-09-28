@@ -1,0 +1,107 @@
+<div class="mx-auto max-w-3xl">
+  <div class="mb-6">
+    <h1 class="font-display text-2xl font-semibold tracking-tight text-ink">Suporte</h1>
+    <p class="mt-1 text-sm text-muted">Perguntas frequentes e acompanhamento dos teus pedidos.</p>
+  </div>
+
+  @if (enviado()) {
+    <div class="mb-5 flex items-center gap-2.5 rounded-control bg-success/10 px-4 py-3 text-sm text-success animate-fade-in">
+      <app-icon name="CircleCheck" [size]="17" />
+      <span>Pedido submetido com sucesso. A nossa equipa entrará em contacto em breve.</span>
+    </div>
+  }
+
+  <div class="mb-6 flex gap-1 rounded-control bg-surface-alt p-1">
+    @for (t of [['faq','Perguntas frequentes'],['tickets','Os meus pedidos'],['novo','Novo pedido']]; track t[0]) {
+      <button
+        type="button"
+        (click)="aba.set($any(t[0]))"
+        class="flex-1 rounded-[calc(var(--radius-control)-2px)] py-2 text-sm font-medium transition-colors"
+        [class.bg-surface]="aba() === t[0]"
+        [class.text-ink]="aba() === t[0]"
+        [class.shadow-card]="aba() === t[0]"
+        [class.text-muted]="aba() !== t[0]"
+      >
+        {{ t[1] }}
+      </button>
+    }
+  </div>
+
+  @if (aba() === 'faq') {
+    <div class="animate-fade-in">
+      <div class="relative mb-5">
+        <app-icon name="Search" [size]="15" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+        <input type="search" [(ngModel)]="termoFaq" [ngModelOptions]="{standalone:true}" placeholder="Pesquisar nas perguntas frequentes…" class="input-field pl-9" />
+      </div>
+      <div class="space-y-2.5">
+        @for (f of faqsFiltradas; track f.id) {
+          <div class="card overflow-hidden">
+            <button type="button" (click)="toggleFaq(f.id)" class="flex w-full items-center justify-between gap-3 p-4 text-left">
+              <span class="text-sm font-medium text-ink">{{ f.pergunta }}</span>
+              <app-icon name="ChevronDown" [size]="16" class="shrink-0 text-muted transition-transform" [class.rotate-180]="faqAberta() === f.id" />
+            </button>
+            @if (faqAberta() === f.id) {
+              <div class="animate-fade-in px-4 pb-4 text-sm leading-relaxed text-muted">{{ f.resposta }}</div>
+            }
+          </div>
+        } @empty {
+          <p class="py-10 text-center text-sm text-muted">Nenhum resultado encontrado.</p>
+        }
+      </div>
+    </div>
+  }
+
+  @if (aba() === 'tickets') {
+    <div class="animate-fade-in space-y-3" [@listStagger]="support.tickets().length">
+      @for (t of support.tickets(); track t.id) {
+        <div class="card p-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+              <span class="font-mono text-xs text-muted">{{ t.numero }}</span>
+              <span class="badge capitalize" [ngClass]="classeEstado(t.estado)">{{ t.estado }}</span>
+            </div>
+            <span class="text-xs text-muted">{{ t.dataAbertura | date: 'dd MMM yyyy' }}</span>
+          </div>
+          <p class="mt-2 text-sm font-medium text-ink">{{ t.assunto }}</p>
+          <p class="mt-1 line-clamp-2 text-[13px] text-muted">{{ t.descricao }}</p>
+        </div>
+      } @empty {
+        <p class="py-16 text-center text-sm text-muted">Ainda não tens pedidos de suporte.</p>
+      }
+    </div>
+  }
+
+  @if (aba() === 'novo') {
+    <form class="card animate-fade-in space-y-4 p-5" (ngSubmit)="submeterTicket()">
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Assunto</label>
+        <input class="input-field" [(ngModel)]="form.assunto" name="assunto" required placeholder="Ex: Computador não liga" />
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Descrição</label>
+        <textarea class="input-field" rows="4" [(ngModel)]="form.descricao" name="descricao" required placeholder="Descreve o problema com o máximo de detalhe possível…"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Categoria</label>
+          <select class="input-field" [(ngModel)]="form.categoria" name="categoria">
+            @for (c of categorias; track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Prioridade</label>
+          <select class="input-field" [(ngModel)]="form.prioridade" name="prioridade">
+            @for (p of prioridades; track p) {
+              <option [value]="p">{{ p }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary w-full py-3">
+        <app-icon name="Send" [size]="15" /> Submeter pedido
+      </button>
+    </form>
+  }
+</div>
