@@ -1,0 +1,97 @@
+<div class="mx-auto max-w-3xl">
+  <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <div>
+      <h1 class="font-display text-2xl font-semibold tracking-tight text-ink">Comunicados</h1>
+      <p class="mt-1 text-sm text-muted">Avisos oficiais da direcção e dos departamentos.</p>
+    </div>
+    @if (auth.isGestor()) {
+      <button type="button" (click)="abrirNovo()" class="btn-primary shrink-0">
+        <app-icon name="Plus" [size]="16" /> Novo comunicado
+      </button>
+    }
+  </div>
+
+  <div class="space-y-4" [@listStagger]="announcements.items().length">
+    @for (a of announcements.items(); track a.id) {
+      <div class="card relative p-5" [class.border-l-4]="a.fixado" [class.border-l-primary]="a.fixado">
+        <div class="flex items-start gap-3.5">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-surface-alt text-ink-soft">
+            <app-icon [name]="iconeDe(a.tipo)" [size]="18" />
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-2">
+              @if (a.fixado) {
+                <app-icon name="Star" [size]="13" class="text-accent" />
+              }
+              <h3 class="font-display text-[15px] font-semibold leading-snug text-ink">{{ a.titulo }}</h3>
+              <span class="badge capitalize" [ngClass]="classePrioridade(a.prioridade)">{{ a.prioridade }}</span>
+            </div>
+            <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">{{ a.mensagem }}</p>
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+              <span>{{ a.autor.nome }}</span>
+              <span>·</span>
+              <span>{{ a.dataPublicacao | date: 'dd MMM yyyy' }}</span>
+              @if (a.dataExpiracao) {
+                <span>·</span>
+                <span>Válido até {{ a.dataExpiracao | date: 'dd MMM' }}</span>
+              }
+            </div>
+          </div>
+          @if (auth.isGestor()) {
+            <div class="flex shrink-0 gap-1">
+              <button type="button" (click)="abrirEdicao(a)" class="rounded-control p-1.5 text-muted hover:bg-surface-alt hover:text-primary">
+                <app-icon name="Settings" [size]="15" />
+              </button>
+              <button type="button" (click)="remover(a)" class="rounded-control p-1.5 text-muted hover:bg-surface-alt hover:text-danger">
+                <app-icon name="X" [size]="15" />
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    } @empty {
+      <p class="py-16 text-center text-sm text-muted">Sem comunicados publicados.</p>
+    }
+  </div>
+</div>
+
+@if (modalAberto()) {
+  <app-modal [title]="emEdicao() ? 'Editar comunicado' : 'Novo comunicado'" (close)="modalAberto.set(false)">
+    <form class="space-y-4" (ngSubmit)="guardar()">
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Título</label>
+        <input class="input-field" [(ngModel)]="form.titulo" name="titulo" required />
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Mensagem</label>
+        <textarea class="input-field" rows="4" [(ngModel)]="form.mensagem" name="mensagem" required></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Tipo</label>
+          <select class="input-field" [(ngModel)]="form.tipo" name="tipo">
+            @for (t of tipos; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Prioridade</label>
+          <select class="input-field" [(ngModel)]="form.prioridade" name="prioridade">
+            @for (p of prioridades; track p) {
+              <option [value]="p">{{ p }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <label class="flex items-center gap-2 text-sm text-ink">
+        <input type="checkbox" [(ngModel)]="form.fixado" name="fixado" class="h-4 w-4 rounded border-border text-primary focus:ring-primary/30" />
+        Fixar no topo
+      </label>
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" (click)="modalAberto.set(false)" class="btn-secondary">Cancelar</button>
+        <button type="submit" class="btn-primary">Guardar</button>
+      </div>
+    </form>
+  </app-modal>
+}

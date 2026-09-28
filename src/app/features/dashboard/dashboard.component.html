@@ -1,0 +1,115 @@
+<div class="mx-auto max-w-6xl space-y-8">
+  <!-- Hero de boas-vindas -->
+  <section class="brand-panel rounded-card px-6 py-8 sm:px-10 sm:py-10">
+    <svg class="pointer-events-none absolute -right-10 -top-10 h-56 w-56 opacity-10 sm:h-72 sm:w-72" viewBox="0 0 100 100">
+      <path d="M55 0 L15 55 H40 L30 100 L85 40 H55 Z" fill="white" />
+    </svg>
+    <p class="relative text-sm font-medium text-primary">{{ saudacao() }}, {{ auth.currentUser()?.nome?.split(' ')?.[0] }}</p>
+    <h1 class="relative mt-2 max-w-xl font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+      Tudo o que precisas para o teu dia de trabalho, num só lugar.
+    </h1>
+    <p class="relative mt-3 max-w-lg text-sm text-white/60">
+      Consulta as últimas notícias, comunicados importantes e acede rapidamente aos serviços mais usados pela tua equipa.
+    </p>
+  </section>
+
+  <div class="grid gap-8 lg:grid-cols-3">
+    <div class="space-y-8 lg:col-span-2">
+      <!-- Notícias em destaque -->
+      <section>
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="font-display text-lg font-semibold tracking-tight text-ink">Notícias em destaque</h2>
+          <a routerLink="/noticias" class="flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-dark">
+            Ver todas <app-icon name="ArrowRight" [size]="14" />
+          </a>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          @for (n of destaques(); track n.id) {
+            <a
+              [routerLink]="['/noticias', n.id]"
+              class="card card-hover group flex flex-col overflow-hidden"
+            >
+              <div class="aspect-[16/9] overflow-hidden bg-surface-alt">
+                <img [src]="n.imagemUrl" [alt]="n.titulo" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              </div>
+              <div class="flex flex-1 flex-col p-4">
+                <span class="badge w-fit bg-primary-light text-primary-dark">{{ n.categoria }}</span>
+                <h3 class="mt-2.5 line-clamp-2 font-display text-[15px] font-semibold leading-snug text-ink">{{ n.titulo }}</h3>
+                <p class="mt-auto pt-3 text-xs text-muted">{{ n.dataPublicacao | date: 'dd MMM yyyy' }} · {{ n.tempoLeituraMin }} min de leitura</p>
+              </div>
+            </a>
+          }
+        </div>
+      </section>
+
+      <!-- Serviços populares -->
+      <section>
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="font-display text-lg font-semibold tracking-tight text-ink">Serviços populares</h2>
+          <a routerLink="/servicos" class="flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-dark">
+            Ver todos <app-icon name="ArrowRight" [size]="14" />
+          </a>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          @for (s of populares(); track s.id) {
+            <a [routerLink]="s.link" class="card card-hover flex items-center gap-3.5 p-4">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary/10 text-primary">
+                <app-icon [name]="s.icone" [size]="19" />
+              </div>
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-ink">{{ s.nome }}</p>
+                <p class="truncate text-xs text-muted">{{ s.descricao }}</p>
+              </div>
+            </a>
+          }
+        </div>
+      </section>
+    </div>
+
+    <div class="space-y-8">
+      <!-- Comunicados fixados -->
+      <section>
+        <h2 class="mb-4 font-display text-lg font-semibold tracking-tight text-ink">Comunicados importantes</h2>
+        <div class="space-y-3">
+          @for (a of fixados(); track a.id) {
+            <div class="card card-accent-left p-4">
+              <div class="flex items-start justify-between gap-2">
+                <p class="text-sm font-semibold leading-snug text-ink">{{ a.titulo }}</p>
+                <app-icon name="Megaphone" [size]="15" class="mt-0.5 shrink-0 text-primary" />
+              </div>
+              <p class="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted">{{ a.mensagem }}</p>
+              <p class="mt-2 text-[11px] text-muted">{{ a.dataPublicacao | date: 'dd MMM' }}</p>
+            </div>
+          } @empty {
+            <p class="text-sm text-muted">Sem comunicados fixados de momento.</p>
+          }
+        </div>
+        <a routerLink="/comunicados" class="mt-3 flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-dark">
+          Ver todos os comunicados <app-icon name="ArrowRight" [size]="14" />
+        </a>
+      </section>
+
+      <!-- Próximos eventos -->
+      <section>
+        <h2 class="mb-4 font-display text-lg font-semibold tracking-tight text-ink">Próximos eventos</h2>
+        <div class="card divide-y divide-border">
+          @for (e of proximosEventos(); track e.id) {
+            <div class="flex items-start gap-3 p-4">
+              <div class="flex w-11 shrink-0 flex-col items-center rounded-control bg-surface-alt py-1.5 text-ink">
+                <span class="text-[10px] font-medium uppercase text-primary">{{ e.dataInicio | date: 'MMM' }}</span>
+                <span class="font-display text-base font-semibold leading-none">{{ e.dataInicio | date: 'dd' }}</span>
+              </div>
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-ink">{{ e.titulo }}</p>
+                <p class="truncate text-xs text-muted">{{ e.local }}</p>
+              </div>
+            </div>
+          }
+        </div>
+        <a routerLink="/eventos" class="mt-3 flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-dark">
+          Ver agenda completa <app-icon name="ArrowRight" [size]="14" />
+        </a>
+      </section>
+    </div>
+  </div>
+</div>

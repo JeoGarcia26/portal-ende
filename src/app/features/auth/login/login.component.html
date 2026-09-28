@@ -1,0 +1,109 @@
+<div class="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
+  <!-- Painel de marca -->
+  <div class="brand-panel relative hidden lg:flex lg:flex-col lg:justify-between lg:p-12">
+    <svg
+      class="pointer-events-none absolute -bottom-16 -right-16 h-[28rem] w-[28rem] opacity-[0.08]"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="xMidYMid slice"
+    >
+      <path d="M55 0 L15 55 H40 L30 100 L85 40 H55 Z" fill="white" />
+    </svg>
+
+    <div class="relative z-10">
+      <img src="/logo-ende-white.png" alt="ENDE — Empresa Nacional de Distribuição de Electricidade" class="h-14 w-auto rounded-lg bg-white p-2 shadow-md" />
+    </div>
+
+    <div class="relative z-10 max-w-md">
+      <p class="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-primary/80">Portal do Colaborador</p>
+      <p class="font-display text-[2.35rem] font-medium leading-[1.12] tracking-tight text-white">
+        A energia que move Angola, o portal que nos liga.
+      </p>
+      <p class="mt-5 text-[15px] leading-relaxed text-white/60">
+        Notícias, comunicados, serviços e suporte num único lugar — construído para os colaboradores
+        da Empresa Nacional de Distribuição de Electricidade.
+      </p>
+    </div>
+
+    <p class="relative z-10 border-t border-white/10 pt-5 text-xs text-white/35">© 2026 ENDE — Uso interno exclusivo</p>
+  </div>
+
+  <!-- Formulário -->
+  <div class="flex items-center justify-center px-6 py-12 sm:px-10">
+    <div class="w-full max-w-sm animate-fade-in">
+      <div class="mb-8 flex items-center gap-2.5 lg:hidden">
+        <div class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg">
+          <img src="/logo-ende-red.png" alt="ENDE" class="h-full w-full object-cover" />
+        </div>
+        <span class="font-display text-lg font-semibold tracking-tight text-ink">ENDE</span>
+      </div>
+
+      <h1 class="font-display text-2xl font-semibold tracking-tight text-ink">Aceder ao portal</h1>
+      <p class="mt-1.5 text-sm text-muted">Entra com as tuas credenciais institucionais.</p>
+
+      <form class="mt-8 space-y-4" (ngSubmit)="submit()">
+        <div>
+          <label for="numeroMecanografico" class="mb-1.5 block text-sm font-medium text-ink">Número mecanográfico</label>
+          <div class="relative">
+            <app-icon name="IdCard" [size]="17" class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+            <input
+              id="numeroMecanografico"
+              name="numeroMecanografico"
+              type="text"
+              required
+              pattern="^[Nn][Mm]\d{5}$"
+              autocomplete="username"
+              [(ngModel)]="numeroMecanografico"
+              class="input-field pl-10 uppercase placeholder:normal-case"
+              placeholder="NM12345"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="password" class="mb-1.5 block text-sm font-medium text-ink">Palavra-passe</label>
+          <div class="relative">
+            <input
+              id="password"
+              name="password"
+              [type]="showPassword() ? 'text' : 'password'"
+              required
+              autocomplete="current-password"
+              [(ngModel)]="password"
+              class="input-field pr-10"
+              placeholder="••••••••"
+            />
+            <button
+              type="button"
+              (click)="showPassword.set(!showPassword())"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink"
+            >
+              <app-icon [name]="showPassword() ? 'EyeOff' : 'Eye'" [size]="17" />
+            </button>
+          </div>
+        </div>
+
+        @if (error()) {
+          <div class="flex items-center gap-2 rounded-control bg-danger/8 px-3.5 py-2.5 text-sm text-danger animate-fade-in">
+            <app-icon name="TriangleAlert" [size]="16" />
+            <span>{{ error() }}</span>
+          </div>
+        }
+
+        <button type="submit" class="btn-primary mt-2 w-full py-3" [disabled]="loading()">
+          @if (loading()) {
+            <span>A entrar…</span>
+          } @else {
+            <span>Entrar</span>
+            <app-icon name="ArrowRight" [size]="16" />
+          }
+        </button>
+      </form>
+
+      <div class="mt-6 rounded-control border border-primary-light bg-primary-light/40 px-4 py-3 text-xs leading-relaxed text-ink-soft">
+        <span class="font-medium text-ink-soft">Ambiente de demonstração:</span>
+        <span class="font-mono">NM10234</span> (gestora) ou <span class="font-mono">NM48591</span> (colaborador) —
+        palavra-passe <span class="font-mono">ende2026</span>
+      </div>
+    </div>
+  </div>
+</div>

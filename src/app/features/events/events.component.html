@@ -1,0 +1,107 @@
+<div class="mx-auto max-w-3xl">
+  <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <div>
+      <h1 class="font-display text-2xl font-semibold tracking-tight text-ink">Eventos</h1>
+      <p class="mt-1 text-sm text-muted">Agenda institucional, formações e momentos de equipa.</p>
+    </div>
+    @if (auth.isGestor()) {
+      <button type="button" (click)="abrirNovo()" class="btn-primary shrink-0">
+        <app-icon name="Plus" [size]="16" /> Novo evento
+      </button>
+    }
+  </div>
+
+  <div class="space-y-3.5" [@listStagger]="events.items().length">
+    @for (e of events.items(); track e.id) {
+      <div class="card group relative flex gap-4 p-5">
+        @if (auth.isGestor()) {
+          <div class="absolute right-3 top-3 z-10 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+            <button type="button" (click)="abrirEdicao(e)" class="rounded-control bg-surface-alt p-1.5 text-ink-soft hover:text-primary">
+              <app-icon name="Settings" [size]="13" />
+            </button>
+            <button type="button" (click)="remover(e)" class="rounded-control bg-surface-alt p-1.5 text-ink-soft hover:text-danger">
+              <app-icon name="X" [size]="13" />
+            </button>
+          </div>
+        }
+        <div class="flex w-14 shrink-0 flex-col items-center justify-center rounded-control bg-primary/10 py-2 text-primary">
+          <span class="text-[11px] font-semibold uppercase">{{ e.dataInicio | date: 'MMM' }}</span>
+          <span class="font-display text-xl font-semibold leading-none">{{ e.dataInicio | date: 'dd' }}</span>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <app-icon [name]="iconeDe(e.tipo)" [size]="14" class="text-ink-soft" />
+            <span class="badge bg-surface-alt capitalize text-ink-soft">{{ e.tipo }}</span>
+            @if (e.online) {
+              <span class="badge bg-primary-light text-primary-dark">Online</span>
+            }
+          </div>
+          <h3 class="mt-1.5 font-display text-[15px] font-semibold text-ink">{{ e.titulo }}</h3>
+          <p class="mt-1 text-[13px] leading-relaxed text-muted">{{ e.descricao }}</p>
+          <div class="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
+            <span class="flex items-center gap-1"><app-icon name="Clock" [size]="12" /> {{ e.dataInicio | date: 'HH:mm' }} – {{ e.dataFim | date: 'HH:mm' }}</span>
+            <span class="flex items-center gap-1"><app-icon name="MapPin" [size]="12" /> {{ e.local }}</span>
+            @if (e.vagasTotal) {
+              <span class="flex items-center gap-1"><app-icon name="Users" [size]="12" /> {{ e.vagasOcupadas }}/{{ e.vagasTotal }} vagas</span>
+            }
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <p class="py-16 text-center text-sm text-muted">Sem eventos agendados.</p>
+    }
+  </div>
+</div>
+
+@if (modalAberto()) {
+  <app-modal [title]="emEdicao() ? 'Editar evento' : 'Novo evento'" (close)="modalAberto.set(false)">
+    <form class="space-y-4" (ngSubmit)="guardar()">
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Título</label>
+        <input class="input-field" [(ngModel)]="form.titulo" name="titulo" required />
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Descrição</label>
+        <textarea class="input-field" rows="3" [(ngModel)]="form.descricao" name="descricao" required></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Início</label>
+          <input type="datetime-local" class="input-field" [(ngModel)]="form.dataInicio" name="dataInicio" required />
+        </div>
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Fim</label>
+          <input type="datetime-local" class="input-field" [(ngModel)]="form.dataFim" name="dataFim" required />
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Tipo</label>
+          <select class="input-field" [(ngModel)]="form.tipo" name="tipo">
+            @for (t of tipos; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Local</label>
+          <input class="input-field" [(ngModel)]="form.local" name="local" required />
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Vagas totais (opcional)</label>
+          <input type="number" min="0" class="input-field" [(ngModel)]="form.vagasTotal" name="vagasTotal" />
+        </div>
+        <label class="mt-6 flex items-center gap-2 text-sm text-ink">
+          <input type="checkbox" [(ngModel)]="form.online" name="online" class="h-4 w-4 rounded border-border text-primary focus:ring-primary/30" />
+          Evento online
+        </label>
+      </div>
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" (click)="modalAberto.set(false)" class="btn-secondary">Cancelar</button>
+        <button type="submit" class="btn-primary">Guardar</button>
+      </div>
+    </form>
+  </app-modal>
+}

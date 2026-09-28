@@ -1,0 +1,124 @@
+<div class="mx-auto max-w-6xl">
+  <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <div>
+      <h1 class="font-display text-2xl font-semibold tracking-tight text-ink">Notícias</h1>
+      <p class="mt-1 text-sm text-muted">Actualidade institucional e das operações da ENDE.</p>
+    </div>
+    @if (auth.isGestor()) {
+      <button type="button" (click)="abrirNova()" class="btn-primary">
+        <app-icon name="Plus" [size]="16" /> Nova notícia
+      </button>
+    }
+  </div>
+
+  <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+    <div class="relative flex-1 sm:max-w-xs">
+      <app-icon name="Search" [size]="15" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+      <input type="search" [(ngModel)]="termo" [ngModelOptions]="{ standalone: true }" placeholder="Pesquisar notícias…" class="input-field pl-9" />
+    </div>
+    <div class="flex flex-wrap gap-1.5">
+      <button
+        type="button"
+        (click)="filtroCategoria.set('todas')"
+        class="badge transition-colors"
+        [class.bg-primary]="filtroCategoria() === 'todas'"
+        [class.text-white]="filtroCategoria() === 'todas'"
+        [class.bg-surface-alt]="filtroCategoria() !== 'todas'"
+        [class.text-ink-soft]="filtroCategoria() !== 'todas'"
+      >
+        Todas
+      </button>
+      @for (c of categorias; track c) {
+        <button
+          type="button"
+          (click)="filtroCategoria.set(c)"
+          class="badge capitalize transition-colors"
+          [class.bg-primary]="filtroCategoria() === c"
+          [class.text-white]="filtroCategoria() === c"
+          [class.bg-surface-alt]="filtroCategoria() !== c"
+          [class.text-ink-soft]="filtroCategoria() !== c"
+        >
+          {{ c }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" [@listStagger]="filtradas.length">
+    @for (n of filtradas; track n.id) {
+      <a [routerLink]="['/noticias', n.id]" class="card card-hover group relative flex flex-col overflow-hidden">
+        @if (auth.isGestor()) {
+          <div class="absolute right-2.5 top-2.5 z-10 flex gap-1.5 opacity-0 transition-opacity group-hover:opacity-100">
+            <button type="button" (click)="abrirEdicao(n, $event)" class="rounded-control bg-surface/90 p-1.5 text-ink-soft shadow-card backdrop-blur hover:text-primary">
+              <app-icon name="Settings" [size]="14" />
+            </button>
+            <button type="button" (click)="remover(n, $event)" class="rounded-control bg-surface/90 p-1.5 text-ink-soft shadow-card backdrop-blur hover:text-danger">
+              <app-icon name="X" [size]="14" />
+            </button>
+          </div>
+        }
+        <div class="aspect-[16/9] overflow-hidden bg-surface-alt">
+          <img [src]="n.imagemUrl" [alt]="n.titulo" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        </div>
+        <div class="flex flex-1 flex-col p-4">
+          <div class="flex items-center gap-2">
+            <span class="badge bg-primary-light capitalize text-primary-dark">{{ n.categoria }}</span>
+            @if (n.destaque) {
+              <app-icon name="Star" [size]="13" class="text-accent" />
+            }
+          </div>
+          <h3 class="mt-2.5 line-clamp-2 font-display text-[15px] font-semibold leading-snug text-ink">{{ n.titulo }}</h3>
+          <p class="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-muted">{{ n.resumo }}</p>
+          <p class="mt-auto pt-3.5 text-xs text-muted">{{ n.dataPublicacao | date: 'dd MMM yyyy' }} · {{ n.tempoLeituraMin }} min</p>
+        </div>
+      </a>
+    } @empty {
+      <p class="col-span-full py-16 text-center text-sm text-muted">Nenhuma notícia encontrada para os filtros seleccionados.</p>
+    }
+  </div>
+</div>
+
+@if (modalAberto()) {
+  <app-modal [title]="emEdicao() ? 'Editar notícia' : 'Nova notícia'" maxWidth="38rem" (close)="modalAberto.set(false)">
+    <form class="space-y-4" (ngSubmit)="guardar()">
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Título</label>
+        <input class="input-field" [(ngModel)]="form.titulo" name="titulo" required />
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Resumo</label>
+        <textarea class="input-field" rows="2" [(ngModel)]="form.resumo" name="resumo" required></textarea>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Conteúdo completo</label>
+        <textarea class="input-field" rows="5" [(ngModel)]="form.conteudo" name="conteudo" required></textarea>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">URL da imagem</label>
+        <input class="input-field" [(ngModel)]="form.imagemUrl" name="imagemUrl" />
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Categoria</label>
+          <select class="input-field" [(ngModel)]="form.categoria" name="categoria">
+            @for (c of categorias; track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Tempo de leitura (min)</label>
+          <input type="number" min="1" class="input-field" [(ngModel)]="form.tempoLeituraMin" name="tempoLeituraMin" />
+        </div>
+      </div>
+      <label class="flex items-center gap-2 text-sm text-ink">
+        <input type="checkbox" [(ngModel)]="form.destaque" name="destaque" class="h-4 w-4 rounded border-border text-primary focus:ring-primary/30" />
+        Destacar na página inicial
+      </label>
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" (click)="modalAberto.set(false)" class="btn-secondary">Cancelar</button>
+        <button type="submit" class="btn-primary">Guardar</button>
+      </div>
+    </form>
+  </app-modal>
+}

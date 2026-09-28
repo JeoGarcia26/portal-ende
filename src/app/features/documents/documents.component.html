@@ -1,0 +1,116 @@
+<div class="mx-auto max-w-4xl">
+  <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <div>
+      <h1 class="font-display text-2xl font-semibold tracking-tight text-ink">Documentos</h1>
+      <p class="mt-1 text-sm text-muted">Políticas, formulários e manuais oficiais da ENDE.</p>
+    </div>
+    @if (auth.isGestor()) {
+      <button type="button" (click)="abrirNovo()" class="btn-primary shrink-0">
+        <app-icon name="Plus" [size]="16" /> Carregar documento
+      </button>
+    }
+  </div>
+
+  <div class="mb-6 flex flex-wrap gap-1.5">
+    <button
+      type="button"
+      (click)="filtro.set('todas')"
+      class="badge transition-colors"
+      [class.bg-primary]="filtro() === 'todas'"
+      [class.text-white]="filtro() === 'todas'"
+      [class.bg-surface-alt]="filtro() !== 'todas'"
+      [class.text-ink-soft]="filtro() !== 'todas'"
+    >
+      Todos
+    </button>
+    @for (c of categorias; track c) {
+      <button
+        type="button"
+        (click)="filtro.set(c)"
+        class="badge capitalize transition-colors"
+        [class.bg-primary]="filtro() === c"
+        [class.text-white]="filtro() === c"
+        [class.bg-surface-alt]="filtro() !== c"
+        [class.text-ink-soft]="filtro() !== c"
+      >
+        {{ c }}
+      </button>
+    }
+  </div>
+
+  <div class="card divide-y divide-border" [@listStagger]="filtrados.length">
+    @for (d of filtrados; track d.id) {
+      <div class="group flex items-center gap-4 p-4">
+        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary/10 text-primary">
+          <app-icon [name]="icone(d.tipo)" [size]="18" />
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="truncate text-sm font-medium text-ink">{{ d.nome }}</p>
+          <p class="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted">
+            <span class="uppercase">{{ d.tipo }}</span>
+            <span>·</span>
+            <span>{{ formatarTamanho(d.tamanhoKb) }}</span>
+            <span>·</span>
+            <span>v{{ d.versao }}</span>
+            <span>·</span>
+            <span>Actualizado em {{ d.dataAtualizacao | date: 'dd MMM yyyy' }}</span>
+          </p>
+        </div>
+        @if (auth.isGestor()) {
+          <button type="button" (click)="remover(d)" class="rounded-control p-2 text-muted opacity-0 transition-opacity hover:text-danger group-hover:opacity-100">
+            <app-icon name="X" [size]="15" />
+          </button>
+        }
+        <a [href]="d.url" download class="btn-secondary shrink-0 !px-3 !py-2">
+          <app-icon name="Download" [size]="15" />
+        </a>
+      </div>
+    } @empty {
+      <p class="py-16 text-center text-sm text-muted">Nenhum documento nesta categoria.</p>
+    }
+  </div>
+</div>
+
+@if (modalAberto()) {
+  <app-modal title="Carregar documento" (close)="modalAberto.set(false)">
+    <form class="space-y-4" (ngSubmit)="guardar()">
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Ficheiro</label>
+        <label class="flex cursor-pointer items-center gap-3 rounded-control border border-dashed border-border bg-surface-alt px-4 py-4 text-sm text-muted transition-colors hover:border-primary hover:text-ink">
+          <app-icon name="Paperclip" [size]="17" />
+          <span class="truncate">{{ ficheiroSelecionado()?.name ?? 'Escolher ficheiro do computador…' }}</span>
+          <input type="file" class="hidden" (change)="aoSelecionarFicheiro($event)" required />
+        </label>
+        <p class="mt-1.5 text-xs text-muted">
+          Simulação local — sem backend, o ficheiro fica apenas disponível nesta sessão do browser.
+        </p>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Nome de exibição</label>
+        <input class="input-field" [(ngModel)]="form.nome" name="nome" required />
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium text-ink">Descrição</label>
+        <textarea class="input-field" rows="2" [(ngModel)]="form.descricao" name="descricao"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Categoria</label>
+          <select class="input-field" [(ngModel)]="form.categoria" name="categoria">
+            @for (c of categoriasBase; track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">Versão</label>
+          <input class="input-field" [(ngModel)]="form.versao" name="versao" />
+        </div>
+      </div>
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" (click)="modalAberto.set(false)" class="btn-secondary">Cancelar</button>
+        <button type="submit" class="btn-primary">Carregar</button>
+      </div>
+    </form>
+  </app-modal>
+}
