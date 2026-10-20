@@ -35,6 +35,7 @@ export const MOCK_ANNOUNCEMENTS: Announcement[] = [
   },
   {
     id: 'c-004',
+    restrito: true,
     titulo: 'Confraternização de meio de ano',
     mensagem: 'A festa de confraternização dos colaboradores realiza-se no dia 29 de Agosto, a partir das 17h00, no pátio da sede. Inscrições através do portal, secção Eventos.',
     tipo: 'evento',

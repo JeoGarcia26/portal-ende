@@ -11,4 +11,5 @@ export interface CompanyDocument {
   url: string;
   dataAtualizacao: string; // ISO 8601
   versao: string;
+  restrito?: boolean; // sem download, só consulta protegida
 }

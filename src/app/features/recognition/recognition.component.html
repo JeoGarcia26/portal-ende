@@ -1,0 +1,251 @@
+<div class="mx-auto max-w-6xl space-y-10">
+  <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <div>
+      <h1 class="font-display text-2xl font-semibold tracking-tight text-ink">Reconhecimento</h1>
+      <p class="mt-1 text-sm text-muted">Cultura corporativa: celebramos quem faz a diferença — e mostramos como foi escolhido.</p>
+    </div>
+    @if (auth.can('reconhecimento.gerir')) {
+      <div class="flex shrink-0 flex-wrap gap-2 whitespace-nowrap">
+        <button type="button" class="btn-secondary" (click)="modal.set('cargo')"><app-icon name="BadgeCheck" [size]="16" /> Registar mudança de cargo</button>
+        <button type="button" class="btn-primary" (click)="abrirEleicao('colaborador')"><app-icon name="Trophy" [size]="16" /> Eleger destaque do mês</button>
+      </div>
+    }
+  </div>
+
+  <!-- Destaques do mês -->
+  <div class="grid gap-5 lg:grid-cols-2">
+    @for (d of [recognition.colaboradorDoMes(), recognition.centroDoMes()]; track $index) {
+      @if (d) {
+        <section class="card overflow-hidden">
+          <div class="brand-panel flex items-center gap-4 px-5 py-5">
+            @if (d.tipo === 'colaborador') {
+              <div class="relative rounded-full ring-4 ring-accent/70">
+                <app-avatar [src]="colaborador(d.referenciaId)?.avatarUrl" [nome]="nomeDe(d)" [size]="72" />
+              </div>
+            } @else {
+              <div class="relative flex h-[72px] w-[72px] items-center justify-center rounded-full bg-white/10 text-accent ring-4 ring-accent/70">
+                <app-icon name="Factory" [size]="32" />
+              </div>
+            }
+            <div class="relative min-w-0">
+              <p class="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-accent">
+                <app-icon name="Trophy" [size]="13" /> {{ d.tipo === 'colaborador' ? 'Colaborador do mês' : 'Centro de distribuição do mês' }}
+              </p>
+              <h2 class="mt-1 truncate font-display text-xl font-semibold text-white">{{ nomeDe(d) }}</h2>
+              <p class="truncate text-sm text-white/60">
+                @if (d.tipo === 'colaborador') {
+                  {{ colaborador(d.referenciaId)?.cargo }} · {{ colaborador(d.referenciaId)?.departamento?.nome }}
+                } @else {
+                  {{ recognition.centro(d.referenciaId)?.provincia }}
+                }
+              </p>
+            </div>
+            <div class="relative ml-auto text-right">
+              <p class="font-display text-3xl font-semibold text-white">{{ nota(d.criterios) }}</p>
+              <p class="text-[11px] text-white/50">nota final /10</p>
+            </div>
+          </div>
+          <div class="p-5">
+            <p class="text-sm italic leading-relaxed text-ink-soft">“{{ d.justificacao }}”</p>
+            <h3 class="mb-3 mt-5 text-xs font-semibold uppercase tracking-wide text-muted">Critérios de selecção</h3>
+            <ul class="space-y-2.5">
+              @for (c of d.criterios; track c.nome) {
+                <li>
+                  <div class="flex items-baseline justify-between gap-2 text-sm">
+                    <span class="text-ink">{{ c.nome }} <span class="text-xs text-muted">(peso {{ c.peso }}%)</span></span>
+                    <span class="font-mono text-xs text-ink">{{ c.nota }}/10</span>
+                  </div>
+                  <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-alt" role="presentation">
+                    <div class="h-full rounded-full bg-primary" [style.width.%]="c.nota * 10"></div>
+                  </div>
+                </li>
+              }
+            </ul>
+            <p class="mt-4 text-xs text-muted">Nota final = média ponderada dos critérios. Referente a {{ d.mes + '-01' | date: 'MMMM yyyy' }}.</p>
+          </div>
+        </section>
+      }
+    }
+  </div>
+
+  <div class="grid gap-8 lg:grid-cols-2">
+    <!-- Aniversários -->
+    <section>
+      <h2 class="mb-4 flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-ink">
+        <app-icon name="Cake" [size]="19" class="text-primary" /> Aniversariantes
+      </h2>
+      <div class="card divide-y divide-border">
+        @for (u of users.aniversariantesHoje(); track u.id) {
+          <div class="flex items-center gap-3.5 bg-accent/5 p-4">
+            <app-avatar [src]="u.avatarUrl" [nome]="u.nome" [size]="52" />
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-semibold text-ink">{{ u.nome }} <span class="badge ml-1 bg-accent/20 text-ink">Hoje 🎂</span></p>
+              <p class="truncate text-xs text-muted">{{ u.cargo }} · {{ u.departamento.nome }}</p>
+            </div>
+            @if (u.id !== auth.currentUser()?.id) {
+              <button type="button" class="btn-secondary shrink-0 !px-3 !py-1.5 text-xs" [disabled]="parabensEnviados().includes(u.id)" (click)="enviarParabens(u)">
+                <app-icon name="Gift" [size]="14" /> {{ parabensEnviados().includes(u.id) ? 'Enviado' : 'Dar parabéns' }}
+              </button>
+            }
+          </div>
+        }
+        @for (u of users.proximosAniversarios(); track u.id) {
+          <div class="flex items-center gap-3.5 p-4">
+            <app-avatar [src]="u.avatarUrl" [nome]="u.nome" [size]="40" />
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-sm font-medium text-ink">{{ u.nome }}</p>
+              <p class="truncate text-xs text-muted">{{ u.departamento.nome }}</p>
+            </div>
+            <span class="shrink-0 text-xs text-muted">{{ u.dataNascimento | date: 'dd MMM' }} · em {{ diasAte(u.dataNascimento!) }} {{ diasAte(u.dataNascimento!) === 1 ? 'dia' : 'dias' }}</span>
+          </div>
+        }
+        @if (!users.aniversariantesHoje().length && !users.proximosAniversarios().length) {
+          <p class="p-6 text-center text-sm text-muted">Sem aniversários nos próximos 30 dias.</p>
+        }
+      </div>
+    </section>
+
+    <!-- Mudanças de cargo -->
+    <section>
+      <h2 class="mb-4 flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-ink">
+        <app-icon name="BadgeCheck" [size]="19" class="text-primary" /> Novas funções
+      </h2>
+      <div class="space-y-3">
+        @for (m of recognition.mudancas(); track m.id) {
+          <div class="card p-4">
+            <div class="flex items-center gap-3.5">
+              <app-avatar [src]="colaborador(m.userId)?.avatarUrl" [nome]="colaborador(m.userId)?.nome ?? ''" [size]="44" />
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-semibold text-ink">{{ colaborador(m.userId)?.nome }}</p>
+                <p class="text-xs text-muted">
+                  <span class="line-through">{{ m.cargoAnterior }}</span>
+                  <app-icon name="ArrowRight" [size]="11" class="mx-1 inline-block align-middle" />
+                  <span class="font-medium text-ink">{{ m.cargoNovo }}</span>
+                </p>
+              </div>
+              <span class="shrink-0 text-[11px] text-muted">{{ m.data | date: 'dd MMM' }}</span>
+            </div>
+            <div class="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3">
+              <p class="truncate text-xs text-muted">
+                @if (m.felicitacoes.length) {
+                  <app-icon name="Heart" [size]="12" class="mr-1 inline-block align-middle text-primary" />
+                  {{ m.felicitacoes.length }} {{ m.felicitacoes.length === 1 ? 'felicitação' : 'felicitações' }} — {{ m.felicitacoes[0].nome }}{{ m.felicitacoes.length > 1 ? ' e outros' : '' }}
+                } @else {
+                  Seja o primeiro a felicitar.
+                }
+              </p>
+              @if (m.userId !== auth.currentUser()?.id) {
+                <button type="button" class="btn-secondary shrink-0 !px-3 !py-1.5 text-xs" [disabled]="jaFelicitou(m)" (click)="felicitar(m)">
+                  <app-icon name="PartyPopper" [size]="14" /> {{ jaFelicitou(m) ? 'Felicitado' : 'Felicitar' }}
+                </button>
+              }
+            </div>
+          </div>
+        } @empty {
+          <p class="card p-6 text-center text-sm text-muted">Sem mudanças de cargo recentes.</p>
+        }
+      </div>
+    </section>
+  </div>
+
+  @if (historico().length) {
+    <section>
+      <h2 class="mb-4 font-display text-lg font-semibold tracking-tight text-ink">Galeria de destaques</h2>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        @for (d of historico(); track d.id) {
+          <div class="card flex items-center gap-3 p-3.5">
+            @if (d.tipo === 'colaborador') {
+              <app-avatar [src]="colaborador(d.referenciaId)?.avatarUrl" [nome]="nomeDe(d)" [size]="40" />
+            } @else {
+              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary"><app-icon name="Factory" [size]="18" /></div>
+            }
+            <div class="min-w-0">
+              <p class="truncate text-sm font-medium text-ink">{{ nomeDe(d) }}</p>
+              <p class="text-[11px] capitalize text-muted">{{ d.mes + '-01' | date: 'MMMM yyyy' }} · {{ nota(d.criterios) }}/10</p>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+</div>
+
+@if (modal() === 'eleger') {
+  <app-modal title="Eleger destaque do mês" maxWidth="38rem" (close)="modal.set(null)">
+    <form class="space-y-4" (ngSubmit)="guardarEleicao()">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="el-tipo" class="mb-1.5 block text-sm font-medium text-ink">Tipo</label>
+          <select id="el-tipo" class="input-field" [ngModel]="eleicao.tipo" (ngModelChange)="mudarTipoEleicao($event)" name="tipo">
+            <option value="colaborador">Colaborador do mês</option>
+            <option value="centro">Centro de distribuição do mês</option>
+          </select>
+        </div>
+        <div>
+          <label for="el-mes" class="mb-1.5 block text-sm font-medium text-ink">Mês</label>
+          <input id="el-mes" type="month" class="input-field" [(ngModel)]="eleicao.mes" name="mes" required />
+        </div>
+      </div>
+      <div>
+        <label for="el-ref" class="mb-1.5 block text-sm font-medium text-ink">{{ eleicao.tipo === 'colaborador' ? 'Colaborador' : 'Centro' }}</label>
+        <select id="el-ref" class="input-field" [(ngModel)]="eleicao.referenciaId" name="referenciaId" required>
+          <option value="" disabled>Seleccionar…</option>
+          @if (eleicao.tipo === 'colaborador') {
+            @for (u of users.users(); track u.id) {
+              <option [value]="u.id">{{ u.nome }} — {{ u.departamento.nome }}</option>
+            }
+          } @else {
+            @for (c of recognition.centros(); track c.id) {
+              <option [value]="c.id">{{ c.nome }}</option>
+            }
+          }
+        </select>
+      </div>
+      <fieldset>
+        <legend class="mb-2 text-sm font-medium text-ink">Critérios (nota 0–10)</legend>
+        <div class="space-y-2">
+          @for (c of eleicao.criterios; track c.nome; let i = $index) {
+            <div class="flex items-center gap-3">
+              <label [for]="'el-c' + i" class="flex-1 text-sm text-ink-soft">{{ c.nome }} <span class="text-xs text-muted">({{ c.peso }}%)</span></label>
+              <input [id]="'el-c' + i" type="number" min="0" max="10" step="0.5" class="input-field !w-20" [(ngModel)]="c.nota" [name]="'c' + i" />
+            </div>
+          }
+        </div>
+        <p class="mt-2 text-xs text-muted">Nota final: <strong class="text-ink">{{ nota(eleicao.criterios) }}</strong>/10</p>
+      </fieldset>
+      <div>
+        <label for="el-just" class="mb-1.5 block text-sm font-medium text-ink">Justificação</label>
+        <textarea id="el-just" class="input-field" rows="3" [(ngModel)]="eleicao.justificacao" name="justificacao" required></textarea>
+      </div>
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" (click)="modal.set(null)" class="btn-secondary">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="!eleicao.referenciaId || !eleicao.justificacao">Publicar e notificar</button>
+      </div>
+    </form>
+  </app-modal>
+}
+
+@if (modal() === 'cargo') {
+  <app-modal title="Registar mudança de cargo" (close)="modal.set(null)">
+    <form class="space-y-4" (ngSubmit)="guardarCargo()">
+      <div>
+        <label for="mc-user" class="mb-1.5 block text-sm font-medium text-ink">Colaborador</label>
+        <select id="mc-user" class="input-field" [(ngModel)]="cargo.userId" name="userId" required>
+          <option value="" disabled>Seleccionar…</option>
+          @for (u of users.users(); track u.id) {
+            <option [value]="u.id">{{ u.nome }} — {{ u.cargo }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label for="mc-cargo" class="mb-1.5 block text-sm font-medium text-ink">Novo cargo</label>
+        <input id="mc-cargo" class="input-field" [(ngModel)]="cargo.cargoNovo" name="cargoNovo" required />
+      </div>
+      <p class="text-xs text-muted">O cargo é actualizado no perfil e todos os colaboradores recebem um alerta para felicitar.</p>
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" (click)="modal.set(null)" class="btn-secondary">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="!cargo.userId || !cargo.cargoNovo.trim()">Publicar</button>
+      </div>
+    </form>
+  </app-modal>
+}

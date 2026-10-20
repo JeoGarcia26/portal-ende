@@ -1,11 +1,12 @@
 import { Injectable, computed, signal } from '@angular/core';
+import { persistedSignal } from '../utils/persisted-signal';
 import { CompanyEvent } from '../../models';
 import { MOCK_EVENTS } from '../../shared/data/mock-events';
 
 /** TODO(backend): substituir por HttpClient — /api/eventos */
 @Injectable({ providedIn: 'root' })
 export class EventsService {
-  private readonly itemsSignal = signal<CompanyEvent[]>([...MOCK_EVENTS]);
+  private readonly itemsSignal = persistedSignal<CompanyEvent[]>('eventos', [...MOCK_EVENTS]);
 
   readonly items = computed(() =>
     [...this.itemsSignal()].sort((a, b) => +new Date(a.dataInicio) - +new Date(b.dataInicio))

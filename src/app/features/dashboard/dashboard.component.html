@@ -1,6 +1,33 @@
 <div class="mx-auto max-w-6xl space-y-8">
   <!-- Hero de boas-vindas -->
-  <section class="brand-panel rounded-card px-6 py-8 sm:px-10 sm:py-10">
+  <section class="brand-panel rounded-card px-6 py-8 sm:px-10 sm:py-10" [ngClass]="{ 'sm:py-16': videoPronto() }">
+    <!-- Vídeo institucional de fundo; sem ficheiro/offline fica o fundo de marca -->
+    <video
+      #video
+      class="pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
+      [class.opacity-0]="!videoPronto()"
+      [src]="videoUrl"
+      [autoplay]="!reduzirMovimento"
+      [muted]="true"
+      loop
+      playsinline
+      preload="metadata"
+      aria-hidden="true"
+      (canplay)="videoPronto.set(true)"
+      (play)="aReproduzir.set(true)"
+      (pause)="aReproduzir.set(false)"
+    ></video>
+    @if (videoPronto()) {
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/60 to-ink/20"></div>
+      <button
+        type="button"
+        (click)="video.paused ? video.play() : video.pause()"
+        class="absolute bottom-3 right-3 z-10 rounded-full bg-white/15 p-2 text-white backdrop-blur transition-colors hover:bg-white/25"
+        [attr.aria-label]="aReproduzir() ? 'Pausar vídeo' : 'Reproduzir vídeo'"
+      >
+        <app-icon [name]="aReproduzir() ? 'Pause' : 'Play'" [size]="16" />
+      </button>
+    }
     <svg class="pointer-events-none absolute -right-10 -top-10 h-56 w-56 opacity-10 sm:h-72 sm:w-72" viewBox="0 0 100 100">
       <path d="M55 0 L15 55 H40 L30 100 L85 40 H55 Z" fill="white" />
     </svg>
@@ -12,6 +39,48 @@
       Consulta as últimas notícias, comunicados importantes e acede rapidamente aos serviços mais usados pela tua equipa.
     </p>
   </section>
+
+  <!-- Aniversariantes do dia (fotografia) e destaques do mês -->
+  @if (users.aniversariantesHoje().length || recognition.colaboradorDoMes()) {
+    <div class="grid gap-5 lg:grid-cols-3">
+      @if (users.aniversariantesHoje().length) {
+        <section class="card overflow-hidden lg:col-span-2" aria-label="Aniversariantes de hoje">
+          <div class="flex items-center gap-2 border-b border-border bg-accent/10 px-5 py-3">
+            <app-icon name="Cake" [size]="18" class="text-primary" />
+            <h2 class="font-display text-[15px] font-semibold text-ink">Hoje é dia de festa! 🎉</h2>
+          </div>
+          <div class="flex gap-6 overflow-x-auto p-5">
+            @for (u of users.aniversariantesHoje(); track u.id) {
+              <a routerLink="/reconhecimento" class="group flex w-32 shrink-0 flex-col items-center text-center">
+                <div class="rounded-full p-1 ring-2 ring-accent transition-transform duration-300 group-hover:scale-105">
+                  <app-avatar [src]="u.avatarUrl" [nome]="u.nome" [size]="96" />
+                </div>
+                <p class="mt-2.5 text-sm font-semibold leading-tight text-ink">{{ u.nome }}</p>
+                <p class="mt-0.5 line-clamp-2 text-[11px] text-muted">{{ u.departamento.nome }}</p>
+              </a>
+            }
+            <div class="flex min-w-[10rem] flex-1 flex-col justify-center text-sm text-ink-soft">
+              <p>A família ENDE deseja um feliz aniversário!</p>
+              <a routerLink="/reconhecimento" class="mt-2 inline-flex items-center gap-1 font-medium text-primary hover:text-primary-dark">
+                Dar os parabéns <app-icon name="ArrowRight" [size]="14" />
+              </a>
+            </div>
+          </div>
+        </section>
+      }
+      @if (recognition.colaboradorDoMes(); as d) {
+        <a routerLink="/reconhecimento" class="card card-hover brand-panel flex flex-col items-center p-5 text-center" [ngClass]="{ 'lg:col-span-3': !users.aniversariantesHoje().length }">
+          <p class="relative flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-accent"><app-icon name="Trophy" [size]="14" /> Colaborador do mês</p>
+          <div class="relative mt-3 rounded-full ring-4 ring-accent/70">
+            <app-avatar [src]="users.byId(d.referenciaId)?.avatarUrl" [nome]="users.byId(d.referenciaId)?.nome ?? ''" [size]="80" />
+          </div>
+          <p class="relative mt-3 font-display text-base font-semibold text-white">{{ users.byId(d.referenciaId)?.nome }}</p>
+          <p class="relative text-xs text-white/60">{{ users.byId(d.referenciaId)?.cargo }}</p>
+          <p class="relative mt-3 text-xs font-medium text-white/80">Ver critérios e centro do mês →</p>
+        </a>
+      }
+    </div>
+  }
 
   <div class="grid gap-8 lg:grid-cols-3">
     <div class="space-y-8 lg:col-span-2">

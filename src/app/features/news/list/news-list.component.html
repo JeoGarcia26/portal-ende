@@ -1,9 +1,12 @@
 <div class="mx-auto max-w-6xl">
-  <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+  <div class="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
     <div>
       <h1 class="font-display text-2xl font-semibold tracking-tight text-ink">Notícias</h1>
-      <p class="mt-1 text-sm text-muted">Actualidade institucional e das operações da ENDE.</p>
+      <p class="mt-1 text-sm text-muted">Actualidade institucional e das operações da ENDE — todas as notícias ficam guardadas.</p>
     </div>
+    <button type="button" (click)="verArquivo.set(!verArquivo())" class="btn-secondary sm:ml-auto" [attr.aria-pressed]="verArquivo()">
+      <app-icon name="Archive" [size]="16" /> {{ verArquivo() ? 'Ver notícias actuais' : 'Arquivo (' + news.arquivadas().length + ')' }}
+    </button>
     @if (auth.isGestor()) {
       <button type="button" (click)="abrirNova()" class="btn-primary">
         <app-icon name="Plus" [size]="16" /> Nova notícia
@@ -52,9 +55,15 @@
             <button type="button" (click)="abrirEdicao(n, $event)" class="rounded-control bg-surface/90 p-1.5 text-ink-soft shadow-card backdrop-blur hover:text-primary">
               <app-icon name="Settings" [size]="14" />
             </button>
-            <button type="button" (click)="remover(n, $event)" class="rounded-control bg-surface/90 p-1.5 text-ink-soft shadow-card backdrop-blur hover:text-danger">
-              <app-icon name="X" [size]="14" />
-            </button>
+            @if (verArquivo()) {
+              <button type="button" (click)="restaurar(n, $event)" class="rounded-control bg-surface/90 p-1.5 text-ink-soft shadow-card backdrop-blur hover:text-success" aria-label="Restaurar notícia">
+                <app-icon name="ArrowLeft" [size]="14" />
+              </button>
+            } @else {
+              <button type="button" (click)="arquivar(n, $event)" class="rounded-control bg-surface/90 p-1.5 text-ink-soft shadow-card backdrop-blur hover:text-danger" aria-label="Arquivar notícia">
+                <app-icon name="Archive" [size]="14" />
+              </button>
+            }
           </div>
         }
         <div class="aspect-[16/9] overflow-hidden bg-surface-alt">
@@ -65,6 +74,9 @@
             <span class="badge bg-primary-light capitalize text-primary-dark">{{ n.categoria }}</span>
             @if (n.destaque) {
               <app-icon name="Star" [size]="13" class="text-accent" />
+            }
+            @if (n.restrito) {
+              <span class="badge bg-danger/10 text-danger"><app-icon name="Lock" [size]="11" /> Uso restrito</span>
             }
           </div>
           <h3 class="mt-2.5 line-clamp-2 font-display text-[15px] font-semibold leading-snug text-ink">{{ n.titulo }}</h3>
@@ -114,6 +126,10 @@
       <label class="flex items-center gap-2 text-sm text-ink">
         <input type="checkbox" [(ngModel)]="form.destaque" name="destaque" class="h-4 w-4 rounded border-border text-primary focus:ring-primary/30" />
         Destacar na página inicial
+      </label>
+      <label class="flex items-center gap-2 text-sm text-ink">
+        <input type="checkbox" [(ngModel)]="form.restrito" name="restrito" class="h-4 w-4 rounded border-border text-primary focus:ring-primary/30" />
+        Uso restrito (marca d'água, sem copiar nem imprimir)
       </label>
       <div class="flex justify-end gap-2.5 pt-2">
         <button type="button" (click)="modalAberto.set(false)" class="btn-secondary">Cancelar</button>

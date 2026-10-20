@@ -22,6 +22,7 @@ export class NewsListComponent {
   readonly categorias = CATEGORIAS;
   readonly filtroCategoria = signal<NewsCategoria | 'todas'>('todas');
   readonly termo = signal('');
+  readonly verArquivo = signal(false);
   readonly modalAberto = signal(false);
   readonly emEdicao = signal<NewsArticle | null>(null);
 
@@ -35,7 +36,7 @@ export class NewsListComponent {
   get filtradas(): NewsArticle[] {
     const cat = this.filtroCategoria();
     const termo = this.termo().toLowerCase().trim();
-    return this.news.items().filter((n) => {
+    return (this.verArquivo() ? this.news.arquivadas() : this.news.items()).filter((n) => {
       const passaCategoria = cat === 'todas' || n.categoria === cat;
       const passaTermo = !termo || n.titulo.toLowerCase().includes(termo) || n.resumo.toLowerCase().includes(termo);
       return passaCategoria && passaTermo;
@@ -51,6 +52,7 @@ export class NewsListComponent {
       categoria: 'institucional' as NewsCategoria,
       destaque: false,
       tempoLeituraMin: 3,
+      restrito: false,
     };
   }
 
@@ -72,6 +74,7 @@ export class NewsListComponent {
       categoria: n.categoria,
       destaque: n.destaque,
       tempoLeituraMin: n.tempoLeituraMin,
+      restrito: !!n.restrito,
     };
     this.modalAberto.set(true);
   }
@@ -91,11 +94,18 @@ export class NewsListComponent {
     this.modalAberto.set(false);
   }
 
-  remover(n: NewsArticle, ev: Event): void {
+  /** RF1: nada se perde — a notícia vai para o arquivo e pode ser restaurada. */
+  arquivar(n: NewsArticle, ev: Event): void {
     ev.preventDefault();
     ev.stopPropagation();
-    if (confirm(`Remover a notícia "${n.titulo}"?`)) {
-      this.news.remove(n.id);
+    if (confirm(`Arquivar a notícia "${n.titulo}"? Continuará disponível no arquivo.`)) {
+      this.news.arquivar(n.id);
     }
+  }
+
+  restaurar(n: NewsArticle, ev: Event): void {
+    ev.preventDefault();
+    ev.stopPropagation();
+    this.news.restaurar(n.id);
   }
 }

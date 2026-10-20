@@ -1,4 +1,4 @@
-export type NotificationTipo = 'noticia' | 'comunicado' | 'suporte' | 'evento' | 'sistema';
+export type NotificationTipo = 'noticia' | 'comunicado' | 'suporte' | 'evento' | 'sistema' | 'reconhecimento' | 'declaracao';
 
 export interface AppNotification {
   id: string;

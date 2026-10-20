@@ -1,4 +1,5 @@
 import { Injectable, computed, signal } from '@angular/core';
+import { persistedSignal } from '../utils/persisted-signal';
 import { FaqItem, SupportTicket } from '../../models';
 import { MOCK_FAQS } from '../../shared/data/mock-faqs';
 import { MOCK_TICKETS } from '../../shared/data/mock-tickets';
@@ -6,7 +7,7 @@ import { MOCK_TICKETS } from '../../shared/data/mock-tickets';
 /** TODO(backend): substituir por HttpClient — /api/suporte/tickets e /api/suporte/faq */
 @Injectable({ providedIn: 'root' })
 export class SupportService {
-  private readonly ticketsSignal = signal<SupportTicket[]>([...MOCK_TICKETS]);
+  private readonly ticketsSignal = persistedSignal<SupportTicket[]>('tickets', [...MOCK_TICKETS]);
   private readonly faqsSignal = signal<FaqItem[]>([...MOCK_FAQS]);
 
   readonly tickets = computed(() =>

@@ -7,3 +7,4 @@ export * from './support.model';
 export * from './event.model';
 export * from './document.model';
 export * from './notification.model';
+export * from './culture.model';

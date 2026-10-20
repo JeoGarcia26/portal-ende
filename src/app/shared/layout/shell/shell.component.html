@@ -22,26 +22,47 @@
       }
     </div>
 
-    <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-      @for (item of navItems; track item.path) {
-        <a
-          [routerLink]="item.path"
-          routerLinkActive="bg-primary/10 text-primary before:opacity-100"
-          [routerLinkActiveOptions]="{ exact: false }"
-          #rla="routerLinkActive"
-          (click)="closeSidebarOnMobile()"
-          class="group relative flex items-center gap-3 rounded-control px-3 py-2.5 text-sm font-medium text-ink-soft transition-colors duration-200 before:absolute before:-left-1 before:top-1/2 before:h-4 before:w-[3px] before:-translate-y-1/2 before:rounded-full before:bg-primary before:opacity-0 before:transition-opacity before:duration-200 hover:bg-surface-alt hover:text-ink"
-          [class.justify-center]="sidebarCollapsed()"
-        >
-          <app-icon [name]="item.icon" [size]="19" [class.text-primary]="rla.isActive" />
-          @if (!sidebarCollapsed()) {
-            <span>{{ item.label }}</span>
-          }
-        </a>
+    <nav class="flex-1 overflow-y-auto px-3 py-4" aria-label="Menu principal">
+      @for (g of navGroups(); track g.titulo) {
+        @if (!sidebarCollapsed()) {
+          <p class="mb-1 mt-4 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted first:mt-0">{{ g.titulo }}</p>
+        } @else {
+          <div class="mx-3 my-3 border-t border-border first:hidden"></div>
+        }
+        <div class="space-y-0.5">
+        @for (item of g.items; track item.path) {
+          <a
+            [routerLink]="item.path"
+            routerLinkActive="bg-primary/10 text-primary before:opacity-100"
+            [routerLinkActiveOptions]="{ exact: false }"
+            #rla="routerLinkActive"
+            (click)="closeSidebarOnMobile()"
+            class="group relative flex items-center gap-3 rounded-control px-3 py-2.5 text-sm font-medium text-ink-soft transition-colors duration-200 before:absolute before:-left-1 before:top-1/2 before:h-4 before:w-[3px] before:-translate-y-1/2 before:rounded-full before:bg-primary before:opacity-0 before:transition-opacity before:duration-200 hover:bg-surface-alt hover:text-ink"
+            [class.justify-center]="sidebarCollapsed()"
+          >
+            <app-icon [name]="item.icon" [size]="19" [class.text-primary]="rla.isActive" />
+            @if (!sidebarCollapsed()) {
+              <span>{{ item.label }}</span>
+            }
+          </a>
+        }
+        </div>
       }
     </nav>
 
-    <div class="border-t border-border p-3">
+    <div class="space-y-1 border-t border-border p-3">
+      <button
+        type="button"
+        (click)="avaliarAberto.set(true)"
+        class="flex w-full items-center gap-3 rounded-control px-3 py-2.5 text-sm font-medium text-ink-soft transition-colors hover:bg-surface-alt hover:text-ink"
+        [class.justify-center]="sidebarCollapsed()"
+        title="Avaliar o portal"
+      >
+        <app-icon name="Smile" [size]="19" />
+        @if (!sidebarCollapsed()) {
+          <span>Avaliar o portal</span>
+        }
+      </button>
       <button
         type="button"
         (click)="toggleCollapsed()"
@@ -93,6 +114,11 @@
                   </button>
                 }
               </div>
+              @if (notifications.alertasSistema() === 'default') {
+                <button type="button" (click)="notifications.activarAlertasSistema()" class="flex w-full items-center gap-2 border-b border-border bg-primary/5 px-4 py-2.5 text-left text-xs font-medium text-primary hover:bg-primary/10">
+                  <app-icon name="BellRing" [size]="14" /> Activar alertas no computador/telemóvel
+                </button>
+              }
               <div class="max-h-80 overflow-y-auto">
                 @for (n of notifications.items(); track n.id) {
                   <button
@@ -126,9 +152,7 @@
             (click)="toggleUserMenu()"
             class="flex items-center gap-2 rounded-control py-1.5 pl-1.5 pr-2.5 transition-colors hover:bg-surface-alt"
           >
-            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-              {{ auth.currentUser()?.nome?.charAt(0) }}
-            </div>
+            <app-avatar [src]="auth.currentUser()?.avatarUrl" [nome]="auth.currentUser()?.nome ?? ''" [size]="32" />
             <div class="hidden text-left leading-tight md:block">
               <p class="text-[13px] font-medium text-ink">{{ auth.currentUser()?.nome }}</p>
               <p class="text-[11px] text-muted">{{ auth.currentUser()?.cargo }}</p>
@@ -156,6 +180,12 @@
       </div>
     </header>
 
+    @if (!online()) {
+      <div class="flex items-center justify-center gap-2 bg-warning/10 px-4 py-2 text-center text-xs font-medium text-warning" role="status">
+        <app-icon name="WifiOff" [size]="14" /> Sem ligação à internet — está a ver o conteúdo guardado da última sessão.
+      </div>
+    }
+
     <main class="relative flex-1 px-4 py-6 sm:px-6 lg:px-8" [@routeFade]="routeAnimation()">
       <router-outlet #outlet="outlet" (activate)="onRouteActivate(outlet)" />
     </main>
@@ -165,3 +195,7 @@
     </footer>
   </div>
 </div>
+
+@if (avaliarAberto()) {
+  <app-satisfaction-prompt (fechar)="avaliarAberto.set(false)" />
+}

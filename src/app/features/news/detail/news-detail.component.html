@@ -1,10 +1,16 @@
 @if (article(); as n) {
-  <div class="mx-auto max-w-3xl animate-fade-in">
+  <div class="mx-auto max-w-3xl animate-fade-in" [appRestrito]="n.restrito">
     <a routerLink="/noticias" class="mb-6 flex items-center gap-1.5 text-sm font-medium text-ink-soft hover:text-primary">
       <app-icon name="ArrowLeft" [size]="15" /> Voltar às notícias
     </a>
 
     <span class="badge bg-primary-light capitalize text-primary-dark">{{ n.categoria }}</span>
+    @if (n.restrito) {
+      <span class="badge ml-1.5 bg-danger/10 text-danger"><app-icon name="Lock" [size]="11" /> Uso restrito — não partilhar</span>
+    }
+    @if (n.arquivada) {
+      <span class="badge ml-1.5 bg-surface-alt text-ink-soft"><app-icon name="Archive" [size]="11" /> Arquivada</span>
+    }
     <h1 class="mt-3 font-display text-2xl font-semibold leading-tight tracking-tight text-ink sm:text-[2rem]">{{ n.titulo }}</h1>
 
     <div class="mt-4 flex items-center gap-3 text-sm text-muted">

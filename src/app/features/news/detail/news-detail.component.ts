@@ -5,11 +5,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { NewsService } from '../../../core/services/news.service';
 import { IconComponent } from '../../../shared/ui/icon/icon.component';
+import { RestrictedDirective } from '../../../shared/ui/restricted/restricted.directive';
 
 @Component({
   selector: 'app-news-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, IconComponent],
+  imports: [CommonModule, RouterLink, IconComponent, RestrictedDirective],
   templateUrl: './news-detail.component.html',
 })
 export class NewsDetailComponent {

@@ -1,11 +1,12 @@
 import { Injectable, computed, signal } from '@angular/core';
+import { persistedSignal } from '../utils/persisted-signal';
 import { ServiceItem } from '../../models';
 import { MOCK_SERVICES } from '../../shared/data/mock-services';
 
 /** TODO(backend): substituir por HttpClient — /api/servicos */
 @Injectable({ providedIn: 'root' })
 export class ServicesCatalogService {
-  private readonly itemsSignal = signal<ServiceItem[]>([...MOCK_SERVICES]);
+  private readonly itemsSignal = persistedSignal<ServiceItem[]>('servicos', [...MOCK_SERVICES]);
 
   readonly items = computed(() => this.itemsSignal());
   readonly populares = computed(() => this.itemsSignal().filter((s) => s.popular));
