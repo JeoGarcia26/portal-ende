@@ -1,0 +1,161 @@
+{
+  "configVersion": 1,
+  "timestamp": 1792518261104,
+  "index": "/portal-ende/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/portal-ende/chunk-23HS6PBY.js",
+        "/portal-ende/chunk-2F67GJRV.js",
+        "/portal-ende/chunk-3LM33ZFQ.js",
+        "/portal-ende/chunk-3W5EU6OZ.js",
+        "/portal-ende/chunk-5HOAWME6.js",
+        "/portal-ende/chunk-5VTRL4UM.js",
+        "/portal-ende/chunk-6665LX7K.js",
+        "/portal-ende/chunk-B2RBJQHV.js",
+        "/portal-ende/chunk-BKHRPHGF.js",
+        "/portal-ende/chunk-CBBO3DFH.js",
+        "/portal-ende/chunk-CWR2NSJ3.js",
+        "/portal-ende/chunk-D27QI4JE.js",
+        "/portal-ende/chunk-DKAVXQ6X.js",
+        "/portal-ende/chunk-EZ7JU7ZJ.js",
+        "/portal-ende/chunk-F4C5DAYC.js",
+        "/portal-ende/chunk-F6FV4WUJ.js",
+        "/portal-ende/chunk-FJR346ZO.js",
+        "/portal-ende/chunk-FJZYWUHW.js",
+        "/portal-ende/chunk-FOLAPWVW.js",
+        "/portal-ende/chunk-GJYHHSNN.js",
+        "/portal-ende/chunk-GSNOE5A7.js",
+        "/portal-ende/chunk-J2FR6Z5I.js",
+        "/portal-ende/chunk-JSHIQ3QU.js",
+        "/portal-ende/chunk-JXLATOKY.js",
+        "/portal-ende/chunk-K2CKOADY.js",
+        "/portal-ende/chunk-LLE33ETY.js",
+        "/portal-ende/chunk-MNLVAJ2C.js",
+        "/portal-ende/chunk-OTBNAO4B.js",
+        "/portal-ende/chunk-QLGHXJNX.js",
+        "/portal-ende/chunk-RUBOJPX3.js",
+        "/portal-ende/chunk-S2MZJTJ3.js",
+        "/portal-ende/chunk-TG7OJYDN.js",
+        "/portal-ende/chunk-TMEQR637.js",
+        "/portal-ende/chunk-UE6B2MUH.js",
+        "/portal-ende/chunk-WKLNX3XV.js",
+        "/portal-ende/chunk-XHYVNCZM.js",
+        "/portal-ende/chunk-YGWMQZ3V.js",
+        "/portal-ende/favicon.ico",
+        "/portal-ende/index.html",
+        "/portal-ende/main-GGEXZWTK.js",
+        "/portal-ende/manifest.webmanifest",
+        "/portal-ende/polyfills-FFHMD2TL.js",
+        "/portal-ende/styles-52BPFFZH.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/portal-ende/logo-ende-red.png",
+        "/portal-ende/logo-ende-white.png"
+      ],
+      "patterns": [
+        "https:\\/\\/fonts\\.googleapis\\.com\\/.*",
+        "https:\\/\\/fonts\\.gstatic\\.com\\/.*",
+        "https:\\/\\/images\\.unsplash\\.com\\/.*",
+        "https:\\/\\/i\\.pravatar\\.cc\\/.*"
+      ]
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-ultimo-conteudo",
+      "patterns": [
+        "\\/api\\/.*"
+      ],
+      "strategy": "freshness",
+      "maxSize": 500,
+      "maxAge": 2592000000,
+      "timeoutMs": 4000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    }
+  ],
+  "hashTable": {
+    "/portal-ende/chunk-23HS6PBY.js": "6a798898e01208106874137e8320aefb24af1b7e",
+    "/portal-ende/chunk-2F67GJRV.js": "4815dfae0bceaafeeface9ed5a18616d4f48c701",
+    "/portal-ende/chunk-3LM33ZFQ.js": "df3bfed8c4d8ff48638212a36bd1fa4b2452cf28",
+    "/portal-ende/chunk-3W5EU6OZ.js": "652d28df929af880652bd6fe428eb084ee56485f",
+    "/portal-ende/chunk-5HOAWME6.js": "aeb8eaa41efa9bc9b6e2b7134d7c2ad3d432e5db",
+    "/portal-ende/chunk-5VTRL4UM.js": "2f3386067d5e1fba47999c29665e9901f96c5c52",
+    "/portal-ende/chunk-6665LX7K.js": "8b927befb367e09e7897d41af74faccaa3622fe0",
+    "/portal-ende/chunk-B2RBJQHV.js": "cc4b531407cb5df96b9634f9f7a1f9c17b455eed",
+    "/portal-ende/chunk-BKHRPHGF.js": "2d2fea5f3a62fe98fd9e8e03dc334167fe93ce0c",
+    "/portal-ende/chunk-CBBO3DFH.js": "886d880e0f18f595e983430daad1206ba7ee0afc",
+    "/portal-ende/chunk-CWR2NSJ3.js": "e020680b8ee9fa008379e3332c9aecb9d5deb8cf",
+    "/portal-ende/chunk-D27QI4JE.js": "edf05df6e52e331374e183a99b43266466301525",
+    "/portal-ende/chunk-DKAVXQ6X.js": "9d14dbddbecb7964b9078a51b7ed7930756f893a",
+    "/portal-ende/chunk-EZ7JU7ZJ.js": "8fca83f7469d1059bc78f10298634bc19e7bbf7c",
+    "/portal-ende/chunk-F4C5DAYC.js": "5cc1a92f9aeb67a501f398d911904cdbc97ef503",
+    "/portal-ende/chunk-F6FV4WUJ.js": "70de2b273a679c976965501595904a9c405f5c49",
+    "/portal-ende/chunk-FJR346ZO.js": "69ba12c38279d42795b84353d153bef3720ff993",
+    "/portal-ende/chunk-FJZYWUHW.js": "9c5be63b39f98af017f2b2ab740025ce9d9743e2",
+    "/portal-ende/chunk-FOLAPWVW.js": "6431a8d3fc4babeae2398ffee4b15100f1daa4a4",
+    "/portal-ende/chunk-GJYHHSNN.js": "a9a1b9355b48c23d8a6220a2e465eb8473403c15",
+    "/portal-ende/chunk-GSNOE5A7.js": "ab72ad43b46c1c92f10356c0eb2490fb80106d81",
+    "/portal-ende/chunk-J2FR6Z5I.js": "dce0b1045d1fc05b4ff828f25f87a396da510fe9",
+    "/portal-ende/chunk-JSHIQ3QU.js": "102a165016bf97d55b29468f80598de13eada70d",
+    "/portal-ende/chunk-JXLATOKY.js": "2a71eb321adf0700fc96d8dc48335d6a53f41845",
+    "/portal-ende/chunk-K2CKOADY.js": "f71eb5546f838c570ff113c8b9011a723071d149",
+    "/portal-ende/chunk-LLE33ETY.js": "1d37929e17103e83d6820e8adaba83c68d9269f9",
+    "/portal-ende/chunk-MNLVAJ2C.js": "187ca5e9b01376eb57d7732239328786a83322b7",
+    "/portal-ende/chunk-OTBNAO4B.js": "838b1336bf2d5a40580d9794ea1821472321c1a0",
+    "/portal-ende/chunk-QLGHXJNX.js": "3d0afb1b65c7eec0a6d123a41a955fe08e5112d5",
+    "/portal-ende/chunk-RUBOJPX3.js": "d2b982fb576d1af75266735489ebe5178769f18b",
+    "/portal-ende/chunk-S2MZJTJ3.js": "b15916b0db7205b9b831199e9d816f42a67095dc",
+    "/portal-ende/chunk-TG7OJYDN.js": "f4eae26130f57057478a5dd6320a2abe4d2ba00b",
+    "/portal-ende/chunk-TMEQR637.js": "bef2efa569cad9889d30445d6e99b438a9b4656b",
+    "/portal-ende/chunk-UE6B2MUH.js": "bb15b598c5f90da5e80604c90ff157d19e90f314",
+    "/portal-ende/chunk-WKLNX3XV.js": "44a38baa6b65f97f8aafc3b282fabc59d1e97460",
+    "/portal-ende/chunk-XHYVNCZM.js": "eb7c99148a8746a12f3e342f52430ad5bb7bfa2a",
+    "/portal-ende/chunk-YGWMQZ3V.js": "b87b437061d9ff5fcb2f43d056c012d921239a5e",
+    "/portal-ende/favicon.ico": "9c39f434fe1261f68c5e3eefdf734630d99c5670",
+    "/portal-ende/index.html": "41308882f7010d179f4f5342e70962fb9a1a232c",
+    "/portal-ende/logo-ende-red.png": "1ac9ed20f1ab8c344b6e906691be68d0ab4e27ac",
+    "/portal-ende/logo-ende-white.png": "612707c4c935c746c7252841b86e740f1320c42d",
+    "/portal-ende/main-GGEXZWTK.js": "a2101bd125c070907a79fbbe0905b17c15bf3290",
+    "/portal-ende/manifest.webmanifest": "cb36116388fa35ef9a5d7eeea0628b5673063f31",
+    "/portal-ende/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
+    "/portal-ende/styles-52BPFFZH.css": "8c949ff1ed50e7ebdc8cb67398a6c8140e2c2a9c"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
