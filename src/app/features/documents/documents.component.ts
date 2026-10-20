@@ -63,6 +63,7 @@ export class DocumentsComponent {
       descricao: '',
       categoria: 'políticas' as DocumentoCategoria,
       versao: '1.0',
+      restrito: false,
     };
   }
 

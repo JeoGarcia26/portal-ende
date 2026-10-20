@@ -8,6 +8,7 @@ import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { ModalComponent } from '../../shared/ui/modal/modal.component';
 import { listStagger } from '../../shared/animations/route-animations';
 import { AppIconName } from '../../shared/ui/icon/icons';
+import { RestrictedDirective } from '../../shared/ui/restricted/restricted.directive';
 
 const TIPOS: AnnouncementTipo[] = ['aviso', 'manutenção', 'evento', 'rh', 'segurança'];
 const PRIORIDADES: Prioridade[] = ['baixa', 'normal', 'alta', 'urgente'];
@@ -30,7 +31,7 @@ const PRIORITY_CLASS: Record<Prioridade, string> = {
 @Component({
   selector: 'app-announcements',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconComponent, ModalComponent],
+  imports: [CommonModule, FormsModule, IconComponent, ModalComponent, RestrictedDirective],
   templateUrl: './announcements.component.html',
   animations: [listStagger],
 })
@@ -62,6 +63,7 @@ export class AnnouncementsComponent {
       tipo: 'aviso' as AnnouncementTipo,
       prioridade: 'normal' as Prioridade,
       fixado: false,
+      restrito: false,
     };
   }
 
@@ -73,7 +75,7 @@ export class AnnouncementsComponent {
 
   abrirEdicao(a: Announcement): void {
     this.emEdicao.set(a);
-    this.form = { titulo: a.titulo, mensagem: a.mensagem, tipo: a.tipo, prioridade: a.prioridade, fixado: a.fixado };
+    this.form = { titulo: a.titulo, mensagem: a.mensagem, tipo: a.tipo, prioridade: a.prioridade, fixado: a.fixado, restrito: !!a.restrito };
     this.modalAberto.set(true);
   }
 

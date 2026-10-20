@@ -1,0 +1,135 @@
+<div class="mx-auto max-w-4xl space-y-8">
+  <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <div>
+      <h1 class="font-display text-2xl font-semibold tracking-tight text-ink">Declarações</h1>
+      <p class="mt-1 text-sm text-muted">Peça declarações e receba-as com assinatura digital verificável.</p>
+    </div>
+    <button type="button" class="btn-primary shrink-0" (click)="pedidoAberto.set(true)"><app-icon name="Plus" [size]="16" /> Pedir declaração</button>
+  </div>
+
+  @if (auth.can('declaracoes.assinar')) {
+    <section>
+      <h2 class="mb-3 flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-ink">
+        <app-icon name="FileSignature" [size]="19" class="text-primary" /> Pedidos por assinar
+        <span class="badge bg-warning/10 text-warning">{{ declarations.pendentes().length }}</span>
+      </h2>
+      <div class="card divide-y divide-border">
+        @for (d of declarations.pendentes(); track d.id) {
+          <div class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium text-ink">Declaração de {{ d.tipo }} — {{ users.byId(d.solicitanteId)?.nome }}</p>
+              <p class="text-xs text-muted">{{ d.finalidade }} · pedida a {{ d.dataPedido | date: 'dd MMM yyyy' }} · <span class="font-mono">{{ d.codigo }}</span></p>
+            </div>
+            <div class="flex shrink-0 gap-2">
+              <button type="button" class="btn-secondary !px-3 !py-1.5 text-xs" (click)="declarations.recusar(d.id)">Recusar</button>
+              <button type="button" class="btn-primary !px-3 !py-1.5 text-xs" [disabled]="aAssinar() === d.id" (click)="assinar(d)">
+                <app-icon name="Fingerprint" [size]="14" /> {{ aAssinar() === d.id ? 'A assinar…' : 'Assinar digitalmente' }}
+              </button>
+            </div>
+          </div>
+        } @empty {
+          <p class="p-6 text-center text-sm text-muted">Sem pedidos pendentes.</p>
+        }
+      </div>
+    </section>
+  }
+
+  <section>
+    <h2 class="mb-3 font-display text-lg font-semibold tracking-tight text-ink">Os meus pedidos</h2>
+    <div class="card divide-y divide-border">
+      @for (d of minhas(); track d.id) {
+        <div class="flex items-center gap-4 p-4">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary/10 text-primary"><app-icon name="FileText" [size]="18" /></div>
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-medium text-ink">Declaração de {{ d.tipo }}</p>
+            <p class="truncate text-xs text-muted">{{ d.finalidade }} · {{ d.dataPedido | date: 'dd MMM yyyy' }}</p>
+          </div>
+          <span class="badge capitalize" [ngClass]="classeEstado(d.estado)">{{ d.estado }}</span>
+          @if (d.estado === 'assinada') {
+            <button type="button" class="btn-secondary shrink-0 !px-3 !py-2" (click)="emVisualizacao.set(d)" aria-label="Ver e imprimir declaração">
+              <app-icon name="Printer" [size]="15" />
+            </button>
+          }
+        </div>
+      } @empty {
+        <p class="p-6 text-center text-sm text-muted">Ainda não pediu nenhuma declaração.</p>
+      }
+    </div>
+  </section>
+
+  <section class="card p-5">
+    <h2 class="flex items-center gap-2 font-display text-base font-semibold text-ink"><app-icon name="ShieldCheck" [size]="18" class="text-primary" /> Verificar autenticidade</h2>
+    <p class="mt-1 text-sm text-muted">Introduza o código impresso na declaração para confirmar que é válida e não foi alterada.</p>
+    <form class="mt-3 flex gap-2" (ngSubmit)="verificar()">
+      <input class="input-field font-mono uppercase" placeholder="ENDE-DEC-XXXXXX" [(ngModel)]="codigo" name="codigo" aria-label="Código de verificação" required />
+      <button type="submit" class="btn-primary shrink-0">Verificar</button>
+    </form>
+    @if (verificacao(); as v) {
+      <p class="mt-3 flex items-center gap-2 text-sm" [class.text-success]="v.valida" [class.text-danger]="!v.valida" role="status">
+        <app-icon [name]="v.valida ? 'CircleCheck' : 'TriangleAlert'" [size]="16" />
+        @if (v.valida) {
+          Válida — declaração de {{ v.declaracao?.tipo }} de {{ users.byId(v.declaracao?.solicitanteId)?.nome }}, assinada por {{ v.declaracao?.assinatura?.assinanteNome }} a {{ v.declaracao?.assinatura?.data | date: 'dd/MM/yyyy HH:mm' }}.
+        } @else if (v.declaracao) {
+          Esta declaração não está assinada ou o conteúdo foi alterado.
+        } @else {
+          Código não encontrado.
+        }
+      </p>
+    }
+  </section>
+</div>
+
+@if (pedidoAberto()) {
+  <app-modal title="Pedir declaração" (close)="pedidoAberto.set(false)">
+    <form class="space-y-4" (ngSubmit)="pedir()">
+      <div>
+        <label for="dc-tipo" class="mb-1.5 block text-sm font-medium text-ink">Tipo</label>
+        <select id="dc-tipo" class="input-field" [(ngModel)]="pedido.tipo" name="tipo">
+          @for (t of tipos; track t) {
+            <option [value]="t">Declaração de {{ t }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label for="dc-fin" class="mb-1.5 block text-sm font-medium text-ink">Finalidade</label>
+        <input id="dc-fin" class="input-field" placeholder="Ex.: abertura de conta bancária" [(ngModel)]="pedido.finalidade" name="finalidade" required />
+      </div>
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" (click)="pedidoAberto.set(false)" class="btn-secondary">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="!pedido.finalidade.trim()">Enviar pedido</button>
+      </div>
+    </form>
+  </app-modal>
+}
+
+@if (emVisualizacao(); as d) {
+  <app-modal title="Declaração assinada" maxWidth="44rem" (close)="emVisualizacao.set(null)">
+    <article class="area-impressao rounded-control border border-border bg-white p-8 text-[#141517]">
+      <header class="flex items-center justify-between border-b-2 border-[#D2211B] pb-4">
+        <img src="/logo-ende-red.png" alt="ENDE" class="h-12 w-12" />
+        <div class="text-right text-[11px] leading-tight text-[#6F727A]">
+          <p class="font-semibold text-[#141517]">ENDE — Empresa Nacional de Distribuição de Electricidade, E.P.</p>
+          <p>Luanda · Angola</p>
+        </div>
+      </header>
+      <h2 class="mt-8 text-center font-display text-lg font-semibold uppercase tracking-wide">Declaração de {{ d.tipo }}</h2>
+      <p class="mt-6 text-justify text-sm leading-7">{{ d.texto }}</p>
+      <p class="mt-6 text-sm">Por ser verdade e me ter sido solicitada, passa-se a presente declaração, que vai assinada digitalmente.</p>
+      <p class="mt-4 text-sm">Luanda, {{ d.assinatura?.data | date: "dd 'de' MMMM 'de' yyyy" }}.</p>
+
+      <div class="mt-10 flex flex-col gap-4 rounded-control border border-dashed border-[#DCDDE3] p-4 sm:flex-row sm:items-center">
+        <app-icon name="BadgeCheck" [size]="34" class="text-[#1B8A57]" />
+        <div class="min-w-0 text-xs leading-relaxed">
+          <p class="font-semibold">Assinado digitalmente por {{ d.assinatura?.assinanteNome }}</p>
+          <p class="text-[#6F727A]">{{ d.assinatura?.assinanteCargo }} · {{ d.assinatura?.data | date: 'dd/MM/yyyy HH:mm:ss' }}</p>
+          <p class="mt-1">Código de verificação: <span class="font-mono font-semibold">{{ d.codigo }}</span></p>
+          <p class="break-all font-mono text-[10px] text-[#6F727A]">SHA-256: {{ d.assinatura?.hash }}</p>
+        </div>
+      </div>
+      <p class="mt-3 text-[10px] text-[#6F727A]">Verifique a autenticidade no Portal do Colaborador → Declarações → Verificar autenticidade.</p>
+    </article>
+    <div class="mt-4 flex justify-end">
+      <button type="button" class="btn-primary" (click)="imprimir()"><app-icon name="Printer" [size]="16" /> Imprimir / guardar PDF</button>
+    </div>
+  </app-modal>
+}

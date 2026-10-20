@@ -45,7 +45,12 @@
           <app-icon [name]="icone(d.tipo)" [size]="18" />
         </div>
         <div class="min-w-0 flex-1">
-          <p class="truncate text-sm font-medium text-ink">{{ d.nome }}</p>
+          <p class="flex items-center gap-2 truncate text-sm font-medium text-ink">
+            {{ d.nome }}
+            @if (d.restrito) {
+              <span class="badge bg-danger/10 text-danger"><app-icon name="Lock" [size]="11" /> Uso restrito</span>
+            }
+          </p>
           <p class="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted">
             <span class="uppercase">{{ d.tipo }}</span>
             <span>·</span>
@@ -61,9 +66,15 @@
             <app-icon name="X" [size]="15" />
           </button>
         }
-        <a [href]="d.url" download class="btn-secondary shrink-0 !px-3 !py-2">
-          <app-icon name="Download" [size]="15" />
-        </a>
+        @if (d.restrito && !auth.isGestor()) {
+          <span class="btn-secondary shrink-0 cursor-not-allowed !px-3 !py-2 opacity-50" title="Documento de uso restrito: sem download">
+            <app-icon name="Lock" [size]="15" />
+          </span>
+        } @else {
+          <a [href]="d.url" download class="btn-secondary shrink-0 !px-3 !py-2" [attr.aria-label]="'Descarregar ' + d.nome">
+            <app-icon name="Download" [size]="15" />
+          </a>
+        }
       </div>
     } @empty {
       <p class="py-16 text-center text-sm text-muted">Nenhum documento nesta categoria.</p>
@@ -107,6 +118,10 @@
           <input class="input-field" [(ngModel)]="form.versao" name="versao" />
         </div>
       </div>
+      <label class="flex items-center gap-2 text-sm text-ink">
+        <input type="checkbox" [(ngModel)]="form.restrito" name="restrito" class="h-4 w-4 rounded border-border text-primary focus:ring-primary/30" />
+        Uso restrito (só gestores podem descarregar)
+      </label>
       <div class="flex justify-end gap-2.5 pt-2">
         <button type="button" (click)="modalAberto.set(false)" class="btn-secondary">Cancelar</button>
         <button type="submit" class="btn-primary">Carregar</button>

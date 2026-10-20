@@ -37,6 +37,7 @@ export const MOCK_NEWS: NewsArticle[] = [
     dataPublicacao: '2026-08-05T11:00:00Z',
     destaque: false,
     tempoLeituraMin: 2,
+    restrito: true,
   },
   {
     id: 'n-004',
@@ -49,6 +50,7 @@ export const MOCK_NEWS: NewsArticle[] = [
     dataPublicacao: '2026-08-01T08:15:00Z',
     destaque: false,
     tempoLeituraMin: 2,
+    restrito: true,
   },
   {
     id: 'n-005',

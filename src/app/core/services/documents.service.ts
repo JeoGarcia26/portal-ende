@@ -1,11 +1,12 @@
 import { Injectable, computed, signal } from '@angular/core';
+import { persistedSignal } from '../utils/persisted-signal';
 import { CompanyDocument } from '../../models';
 import { MOCK_DOCUMENTS } from '../../shared/data/mock-documents';
 
 /** TODO(backend): substituir por HttpClient — /api/documentos */
 @Injectable({ providedIn: 'root' })
 export class DocumentsService {
-  private readonly itemsSignal = signal<CompanyDocument[]>([...MOCK_DOCUMENTS]);
+  private readonly itemsSignal = persistedSignal<CompanyDocument[]>('documentos', [...MOCK_DOCUMENTS]);
 
   readonly items = computed(() => this.itemsSignal());
 

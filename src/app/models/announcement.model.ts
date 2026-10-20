@@ -13,4 +13,5 @@ export interface Announcement {
   dataPublicacao: string; // ISO 8601
   dataExpiracao?: string; // ISO 8601 — deixa de aparecer em destaque após esta data
   fixado: boolean; // aparece sempre no topo (ex: comunicados de direcção)
+  restrito?: boolean;
 }

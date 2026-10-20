@@ -107,3 +107,45 @@
     scroll-behavior: auto !important;
   }
 }
+
+// ---- RF3: conteúdo de uso restrito (ver RestrictedDirective) ----------------
+.conteudo-restrito {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  transition: filter 0.15s;
+}
+.conteudo-restrito.restrito-oculto {
+  filter: blur(14px);
+}
+.marca-agua {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background-repeat: repeat;
+}
+
+@media print {
+  body.tem-conteudo-restrito * {
+    display: none !important;
+  }
+  body.tem-conteudo-restrito::after {
+    content: 'Conteúdo de uso restrito — impressão não autorizada.';
+  }
+
+  // Impressão de declarações: só a área marcada é impressa
+  body:has(.area-impressao) * {
+    visibility: hidden;
+  }
+  .area-impressao,
+  .area-impressao * {
+    visibility: visible;
+  }
+  .area-impressao {
+    position: absolute;
+    inset: 0 0 auto 0;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+}
